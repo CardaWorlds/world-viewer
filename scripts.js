@@ -38,6 +38,7 @@ fetch("https://cardaworlds-api.herokuapp.com/CheckAsset/" + nft_id, {
 
 
 function init(imageURL, heightmap, background, name) {
+    console.log(heightmap)
     image = document.createElement('img');
     height_image = document.createElement('img');
 
@@ -100,7 +101,7 @@ function init(imageURL, heightmap, background, name) {
     //document.body.appendChild(height_image);
 
     var texture = new THREE.Texture(image)
-    var heightmap = new THREE.Texture(height_image)
+   // var heightmap = new THREE.Texture(height_image)
 
     image.onload = function () {
         texture.needsUpdate = true;
@@ -117,13 +118,15 @@ function init(imageURL, heightmap, background, name) {
     var ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
     scene.add(ambientLight);
 
-    //const loader = new THREE.TextureLoader();
+    const loader = new THREE.TextureLoader();
     THREE.ImageUtils.crossOrigin = 'anonymous';
     var material = new THREE.MeshPhongMaterial({
-        map: THREE.ImageUtils.loadTexture(imageURL),
-        bumpMap: THREE.ImageUtils.loadTexture(heightmap),
-        bumpScale: 2,
-        shininess: 10
+        map: loader.load(imageURL),
+        bumpMap: loader.load(heightmap),
+        bumpScale:1.2,
+        displacementMap: loader.load(heightmap),
+        displacementScale: 5,
+        shininess: 15
 
         /* uniforms: uniforms,
         vertexShader: document.getElementById('vertex_shader').textContent,
