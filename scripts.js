@@ -43,8 +43,14 @@ function init(imageURL, heightmap, background, name) {
 
     var nftInfo = document.getElementById("NFTinfo");
     var nft_title = document.getElementById("NFTtitle");
-    nft_title.innerHTML = name;
-    nftInfo.appendChild(nft_title)
+    var nft_link = document.getElementById("NFTlink");
+
+    nft_link.innerHTML = name;
+    nftInfo.appendChild(nft_title);
+    nft_link.setAttribute("href",imageURL);
+    nft_link.setAttribute("target","_blank");
+
+
 
     image.crossOrigin = "anonymous";
     image.src = imageURL;
