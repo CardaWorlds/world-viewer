@@ -2,13 +2,43 @@
 
 var camera, scene, renderer;
 var image;
-
-init();
-animate();
+let params = new URLSearchParams(document.location.search.substring(1));
+var nft_id = params.get("nft_id");
 var mesh;
 
-function init() {
 
+
+fetch("https://cardaworlds-api.herokuapp.com/CheckAsset/" + nft_id, {
+    "dataType": 'jsonp',
+    "method": "GET"
+})
+    .then(response => response.json())
+    .then(response => {
+        console.log(response);
+        var metadata = response.onchain_metadata;
+        var image_ipfs = metadata.image.replace("ipfs://", "")
+        var imageURL = "https://ipfs.io/ipfs/" + image_ipfs
+        var nft_info = {
+            "asset_id": response.asset,
+            "asset_name": response.name,
+            "description": metadata.description,
+            "name": metadata.name,
+            "imageURL": imageURL,
+            "heightmap":"https://ipfs.io/ipfs/" + metadata.files[0].src.replace("ipfs://", ""),
+            "background":"https://ipfs.io/ipfs/" + metadata.files[1].src.replace("ipfs://", "")
+        }
+        init(nft_info.imageURL, nft_info.heightmap, nft_info.background, nft_info.name);
+        animate();
+    })
+    .catch(err => {
+        console.log(err);
+    });
+
+
+
+
+function init(imageURL, heightmap, background, name) {
+    document.body.setAttribute('background', "url("+background+") no-repeat center center")
     info = document.createElement('div');
     info.style.position = 'absolute';
     info.style.top = '30px';
@@ -25,8 +55,8 @@ function init() {
     renderer = new THREE.WebGLRenderer({ alpha: true }); //alpha: true is used to allow backgrounds
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(renderer.domElement);
-    
-    
+
+
 
     scene = new THREE.Scene();
 
@@ -56,7 +86,7 @@ function init() {
     };
 
     var light = new THREE.DirectionalLight(0x404040, 3);
-    light.position.set( 50, 50, 40);
+    light.position.set(50, 50, 40);
     scene.add(light);
 
     var ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
@@ -64,10 +94,10 @@ function init() {
 
 
     var material = new THREE.MeshPhongMaterial({
-        map: THREE.ImageUtils.loadTexture('./CardaWorld1106.png'),
-        bumpMap:THREE.ImageUtils.loadTexture('./heightmap_1106.png'),
-        bumpScale:2,
-        shininess:10
+        map: THREE.ImageUtils.loadTexture(imageURL),
+        bumpMap: THREE.ImageUtils.loadTexture(heightmap),
+        bumpScale: 2,
+        shininess: 10
 
         /* uniforms: uniforms,
         vertexShader: document.getElementById('vertex_shader').textContent,
@@ -91,7 +121,7 @@ function init() {
         }
      
      } */
-    
+
 
     scene.add(mesh);
 
@@ -113,11 +143,11 @@ function animate() {
 }
 
 function render() {
-    
+
     renderer.render(scene, camera);
 
 }
-image.crossOrigin = "anonymous";
+/* image.crossOrigin = "anonymous";
 image.src = './CardaWorld1106.png';
 image.width = 720;
 image.height = 1080;
@@ -125,4 +155,4 @@ image.height = 1080;
 height_image.crossOrigin = "anonymous";
 height_image.src = 'https://i.ibb.co/kS3qWBL/heightmap-9.png';
 height_image.width = 720;
-height_image.height = 1080;
+height_image.height = 1080; */
