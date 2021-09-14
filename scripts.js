@@ -17,15 +17,15 @@ fetch("https://cardaworlds-api.herokuapp.com/CheckAsset/" + nft_id, {
         console.log(response);
         var metadata = response.onchain_metadata;
         var image_ipfs = metadata.image.replace("ipfs://", "")
-        var imageURL = "https://ipfs.io/ipfs/" + image_ipfs
+        var imageURL = "https://gw2.easy-ipfs.com/ipfs/" + image_ipfs
         var nft_info = {
             "asset_id": response.asset,
             "asset_name": response.name,
             "description": metadata.description,
             "name": metadata.name,
             "imageURL": imageURL,
-            "heightmap": "https://gw2.easy-ipfs.com/ipfs/" + metadata.files[0].src.replace("ipfs://", ""),
-            "background": "https://gw2.easy-ipfs.com/ipfs/" + metadata.files[1].src.replace("ipfs://", "")
+            "heightmap": "https://gw2.easy-ipfs.com/ipfs/" + metadata.files[1].src.replace("ipfs://", ""),
+            "background": "https://gw2.easy-ipfs.com/ipfs/" + metadata.files[0].src.replace("ipfs://", "")
         }
         init(nft_info.imageURL, nft_info.heightmap, nft_info.background, nft_info.name);
         animate();
@@ -38,6 +38,8 @@ fetch("https://cardaworlds-api.herokuapp.com/CheckAsset/" + nft_id, {
 
 
 function init(imageURL, heightmap, background, name) {
+    image = document.createElement('img');
+    height_image = document.createElement('img');
 
     image.crossOrigin = "anonymous";
     image.src = imageURL;
@@ -49,7 +51,8 @@ function init(imageURL, heightmap, background, name) {
     height_image.width = 720;
     height_image.height = 1080;
 
-    document.body.setAttribute('background', "url(" + background + ") no-repeat center center")
+    document.body.style.backgroundImage = "url("+background+")";
+
     info = document.createElement('div');
     info.style.position = 'absolute';
     info.style.top = '30px';
@@ -78,9 +81,7 @@ function init(imageURL, heightmap, background, name) {
     controls.minDistance = 75;
     controls.maxDistance = 200;
     controls.enablePan = false;
-
-    image = document.createElement('img');
-    height_image = document.createElement('img');
+    
 
     document.body.appendChild(image);
     //document.body.appendChild(height_image);
@@ -103,7 +104,7 @@ function init(imageURL, heightmap, background, name) {
     var ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
     scene.add(ambientLight);
 
-    const loader = new THREE.TextureLoader();
+    //const loader = new THREE.TextureLoader();
     THREE.ImageUtils.crossOrigin = 'anonymous';
     var material = new THREE.MeshPhongMaterial({
         map: THREE.ImageUtils.loadTexture(imageURL),
