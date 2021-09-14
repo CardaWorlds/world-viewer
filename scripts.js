@@ -41,6 +41,11 @@ function init(imageURL, heightmap, background, name) {
     image = document.createElement('img');
     height_image = document.createElement('img');
 
+    var nftInfo = document.getElementById("NFTinfo");
+    var nft_title = document.getElementById("NFTtitle");
+    nft_title.innerHTML = name;
+    nftInfo.appendChild(nft_title)
+
     image.crossOrigin = "anonymous";
     image.src = imageURL;
     image.width = 720;

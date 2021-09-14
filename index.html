@@ -1,21 +1,22 @@
 <!doctype html>
 
 <html lang="en">
+
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title>CardaWorld Viewer</title>
-  <meta name="description" content="A simple HTML5 Template for new projects.">
-  <meta name="author" content="SitePoint">
+    <title>CardaWorld Viewer</title>
+    <meta name="description" content="A simple HTML5 Template for new projects.">
+    <meta name="author" content="SitePoint">
 
-  <meta property="og:title" content="A Basic HTML5 Template">
-  <meta property="og:type" content="website">
-  <meta property="og:url" content="https://www.sitepoint.com/a-basic-html5-template/">
-  <meta property="og:description" content="A simple HTML5 Template for new projects.">
-  
-<script src="https://threejs.org/build/three.min.js"></script>
-<script src="https://threejs.org/examples/js/controls/OrbitControls.js"></script>
+    <meta property="og:title" content="A Basic HTML5 Template">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://www.sitepoint.com/a-basic-html5-template/">
+    <meta property="og:description" content="A simple HTML5 Template for new projects.">
+
+    <script src="https://threejs.org/build/three.min.js"></script>
+    <script src="https://threejs.org/examples/js/controls/OrbitControls.js"></script>
 
 </head>
 
@@ -36,11 +37,33 @@
         top: 0px;
         z-index: 1;
     }
+
+    .map-overlay {
+        /* position: absolute --> */
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: rgba(255, 255, 255, 0.4);
+        font-family: Helvetica, sans-serif;
+        border-radius: 4px;
+        z-index:80;
+        width:auto;
+        vertical-align: middle;
+        padding:2px;
+    }
+    #NFTtitle{
+        margin:1px;
+    }
+    
 </style>
 
 <body>
-  <!-- your content here... -->
-  <script id="vertex_shader" type="x-shader/x-vertex">
+    <div id="NFTinfo" class="map-overlay">
+        <h4 id="NFTtitle"></h4>
+    </div>
+
+            <!-- your content here... -->
+            <script id="vertex_shader" type="x-shader/x-vertex">
 
     varying vec3 vNormal;
     
@@ -53,9 +76,9 @@
     }
     
     </script>
-    
-    <script id="fragment_shader" type="x-shader/x-fragment">
-    
+
+            <script id="fragment_shader" type="x-shader/x-fragment">
+
     uniform sampler2D tex;
     
     varying vec3 vNormal;
@@ -73,11 +96,7 @@
     }
     
     </script>
-    <script src="scripts.js"></script>    
+            <script src="scripts.js"></script>
 </body>
+
 </html>
-
-
-
-
-
