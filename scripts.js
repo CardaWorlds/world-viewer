@@ -50,6 +50,8 @@ function init(imageURL, heightmap, background, name) {
     image.src = imageURL;
     image.width = 720;
     image.height = 1080;
+    image.style.maxHeight="30%";
+    image.style.maxWeight="30%";
 
     height_image.crossOrigin = "anonymous";
     height_image.src = heightmap;
