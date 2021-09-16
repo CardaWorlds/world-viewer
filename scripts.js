@@ -5,10 +5,17 @@ var image;
 let params = new URLSearchParams(document.location.search.substring(1));
 var nft_id = params.get("nft_id");
 var mesh;
-
 // document.getElementById("share-btn").addEventListener("click",(e)=>{window.open("https://viewer.cardaworlds.io/?nft_id="+nft_id, "_blank");})
 
+var video = document.createElement('audio');
+video.autoplay = true;
+video.volume = 0;
+video.src = 'video.mp4';
+
+var capturer = new CCapture({ format: 'gif', workersPath: 'screen-capture/', framerate: 40, });
+
 fetch("https://cardaworlds-api.herokuapp.com/CheckAsset/" + nft_id, {
+
     "dataType": 'jsonp',
     "method": "GET"
 })
@@ -30,23 +37,41 @@ fetch("https://cardaworlds-api.herokuapp.com/CheckAsset/" + nft_id, {
         }
         init(nft_info.imageURL, nft_info.heightmap, nft_info.background, nft_info.name, nft_info.planetName);
         animate();
+
     })
     .catch(err => {
         console.log(err);
     });
 
 
+function saveCapture(){
+    capturer.start();
+    let button =document.getElementById("saveGIF");
+    button.disabled=true;
+    button.innerHTML = "Recording...";
+    setTimeout(function () {
+        console.log("stopped");
+        button.innerHTML = "Saving...";
+        capturer.stop();
+        capturer.save();
+        /* setTimeout(function(){
+            button.disabled=false;
+            button.innerHTML = "saveGIF";
+        },30000); */
+    }, 7000);
 
+}
+document.getElementById("saveGIF").addEventListener('click',()=>{saveCapture()});
 
-function init(imageURL, heightmap, background, name,planetName) {
+function init(imageURL, heightmap, background, name, planetName) {
     console.log(heightmap)
     image = document.createElement('img');
     height_image = document.createElement('img');
 
     var nftInfo = document.getElementById("NFTinfo");
     var nft_title = document.getElementById("NFTtitle");
-    var nft_planet_name=document.createElement('p');
-    nft_planet_name.innerHTML=planetName;
+    var nft_planet_name = document.createElement('p');
+    nft_planet_name.innerHTML = planetName;
 
     var nft_link = document.getElementById("NFTlink");
 
@@ -54,8 +79,8 @@ function init(imageURL, heightmap, background, name,planetName) {
     nftInfo.appendChild(nft_title);
     nftInfo.appendChild(nft_planet_name)
 
-    nft_link.setAttribute("href",imageURL);
-    nft_link.setAttribute("target","_blank");
+    nft_link.setAttribute("href", imageURL);
+    nft_link.setAttribute("target", "_blank");
 
 
 
@@ -63,15 +88,15 @@ function init(imageURL, heightmap, background, name,planetName) {
     image.src = imageURL;
     image.width = 720;
     image.height = 1080;
-    image.style.maxHeight="30%";
-    image.style.maxWeight="30%";
+    image.style.maxHeight = "30%";
+    image.style.maxWeight = "30%";
 
     height_image.crossOrigin = "anonymous";
     height_image.src = heightmap;
     height_image.width = 720;
     height_image.height = 1080;
 
-    document.body.style.backgroundImage = "url("+background+")";
+    //document.body.style.backgroundImage = "url(" + background + ")";
 
     info = document.createElement('div');
     info.style.position = 'absolute';
@@ -101,13 +126,13 @@ function init(imageURL, heightmap, background, name,planetName) {
     controls.minDistance = 75;
     controls.maxDistance = 200;
     controls.enablePan = false;
-    
+
 
     document.body.appendChild(image);
     //document.body.appendChild(height_image);
 
     var texture = new THREE.Texture(image)
-   // var heightmap = new THREE.Texture(height_image)
+    // var heightmap = new THREE.Texture(height_image)
 
     image.onload = function () {
         texture.needsUpdate = true;
@@ -125,11 +150,16 @@ function init(imageURL, heightmap, background, name,planetName) {
     scene.add(ambientLight);
 
     const loader = new THREE.TextureLoader();
+    loader.load(background , function(texture)
+            {
+             scene.background = texture;  
+            });
+
     THREE.ImageUtils.crossOrigin = 'anonymous';
     var material = new THREE.MeshPhongMaterial({
         map: loader.load(imageURL),
         bumpMap: loader.load(heightmap),
-        bumpScale:1.2,
+        bumpScale: 1.2,
         displacementMap: loader.load(heightmap),
         displacementScale: 5,
         shininess: 15
@@ -161,6 +191,7 @@ function init(imageURL, heightmap, background, name,planetName) {
     scene.add(mesh);
 
 
+
 }
 
 function animate() {
@@ -178,7 +209,7 @@ function animate() {
 }
 
 function render() {
-
+    capturer.capture(renderer.domElement);
     renderer.render(scene, camera);
 
 }
