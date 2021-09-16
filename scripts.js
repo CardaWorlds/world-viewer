@@ -6,7 +6,7 @@ let params = new URLSearchParams(document.location.search.substring(1));
 var nft_id = params.get("nft_id");
 var mesh;
 
-
+// document.getElementById("share-btn").addEventListener("click",(e)=>{window.open("https://viewer.cardaworlds.io/?nft_id="+nft_id, "_blank");})
 
 fetch("https://cardaworlds-api.herokuapp.com/CheckAsset/" + nft_id, {
     "dataType": 'jsonp',
@@ -23,11 +23,12 @@ fetch("https://cardaworlds-api.herokuapp.com/CheckAsset/" + nft_id, {
             "asset_name": response.name,
             "description": metadata.description,
             "name": metadata.name,
+            "planetName": metadata.planetName,
             "imageURL": imageURL,
             "heightmap": "https://gw2.easy-ipfs.com/ipfs/" + metadata.files[1].src.replace("ipfs://", ""),
             "background": "https://gw2.easy-ipfs.com/ipfs/" + metadata.files[0].src.replace("ipfs://", "")
         }
-        init(nft_info.imageURL, nft_info.heightmap, nft_info.background, nft_info.name);
+        init(nft_info.imageURL, nft_info.heightmap, nft_info.background, nft_info.name, nft_info.planetName);
         animate();
     })
     .catch(err => {
@@ -37,17 +38,22 @@ fetch("https://cardaworlds-api.herokuapp.com/CheckAsset/" + nft_id, {
 
 
 
-function init(imageURL, heightmap, background, name) {
+function init(imageURL, heightmap, background, name,planetName) {
     console.log(heightmap)
     image = document.createElement('img');
     height_image = document.createElement('img');
 
     var nftInfo = document.getElementById("NFTinfo");
     var nft_title = document.getElementById("NFTtitle");
+    var nft_planet_name=document.createElement('p');
+    nft_planet_name.innerHTML=planetName;
+
     var nft_link = document.getElementById("NFTlink");
 
     nft_link.innerHTML = name;
     nftInfo.appendChild(nft_title);
+    nftInfo.appendChild(nft_planet_name)
+
     nft_link.setAttribute("href",imageURL);
     nft_link.setAttribute("target","_blank");
 
