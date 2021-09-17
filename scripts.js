@@ -12,7 +12,7 @@ video.autoplay = true;
 video.volume = 0;
 video.src = 'video.mp4';
 
-var capturer = new CCapture({ format: 'gif', workersPath: 'screen-capture/', framerate: 40, });
+var capturer = new CCapture({ format: 'gif', workersPath: 'screen-capture/', framerate: 50, });
 
 fetch("https://cardaworlds-api.herokuapp.com/CheckAsset/" + nft_id, {
 
