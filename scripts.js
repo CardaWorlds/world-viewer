@@ -32,7 +32,7 @@ fetch("https://cardaworlds-api.herokuapp.com/CheckAsset/" + nft_id, {
             "heightmap": "https://gw2.easy-ipfs.com/ipfs/" + metadata.files[0].src.replace("ipfs://", ""),
             "background": "https://gw2.easy-ipfs.com/ipfs/" + metadata.files[1].src.replace("ipfs://", "")
         }
-
+        console.log(nft_info.rarities)
 
         init(nft_info.imageURL, nft_info.heightmap, nft_info.background, nft_info.name, nft_info.planetName, nft_info.rarities);
         animate();
