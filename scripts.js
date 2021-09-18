@@ -8,7 +8,7 @@ var mesh;
 // document.getElementById("share-btn").addEventListener("click",(e)=>{window.open("https://viewer.cardaworlds.io/?nft_id="+nft_id, "_blank");})
 
 
-var capturer = new CCapture({ format: 'gif', workersPath: 'screen-capture/', framerate: 50, });
+var capturer = new CCapture({ format: 'gif', workersPath: 'screen-capture/', framerate: 30, });
 
 fetch("https://cardaworlds-api.herokuapp.com/CheckAsset/" + nft_id, {
 
@@ -27,13 +27,14 @@ fetch("https://cardaworlds-api.herokuapp.com/CheckAsset/" + nft_id, {
             "description": metadata.description,
             "name": metadata.name,
             "planetName": metadata.planetName,
+            "galaxyType":metadata.galaxyType,
             "rarities": metadata.rarities,
             "imageURL": imageURL,
             "heightmap": "https://gw2.easy-ipfs.com/ipfs/" + metadata.files[0].src.replace("ipfs://", ""),
             "background": "https://gw2.easy-ipfs.com/ipfs/" + metadata.files[1].src.replace("ipfs://", "")
         }
 
-        init(nft_info.imageURL, nft_info.heightmap, nft_info.background, nft_info.name, nft_info.planetName, nft_info.rarities);
+        init(nft_info.imageURL, nft_info.heightmap, nft_info.background, nft_info.name, nft_info.planetName, nft_info.rarities, nft_info.galaxyType);
         animate();
 
     })
@@ -61,7 +62,7 @@ function saveCapture() {
 }
 document.getElementById("saveGIF").addEventListener('click', () => { saveCapture() });
 
-function init(imageURL, heightmap, background, name, planetName, rarities) {
+function init(imageURL, heightmap, background, name, planetName, rarities, galaxyType) {
     console.log(heightmap)
     image = document.createElement('img');
     height_image = document.createElement('img');
@@ -71,8 +72,13 @@ function init(imageURL, heightmap, background, name, planetName, rarities) {
 
     var nftInfo = document.getElementById("NFTinfo");
     var nft_title = document.getElementById("NFTtitle");
+
+    var background_color = document.createElement('p');
+    background_color.innerHTML = "<b>Galaxy type: </b>" + galaxyType;
+
     var nft_planet_name = document.createElement('p');
     nft_planet_name.innerHTML = "<b>Name: </b>" + planetName;
+
 
     var nft_link = document.getElementById("NFTlink");
 
@@ -82,6 +88,9 @@ function init(imageURL, heightmap, background, name, planetName, rarities) {
 
     nft_link.setAttribute("href", imageURL);
     nft_link.setAttribute("target", "_blank");
+    
+
+    
     
 
     image.crossOrigin = "anonymous";
