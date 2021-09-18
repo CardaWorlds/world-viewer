@@ -66,6 +66,9 @@ function init(imageURL, heightmap, background, name, planetName, rarities) {
     image = document.createElement('img');
     height_image = document.createElement('img');
 
+    rarities_html = '<b>Rarities: </b><ul><li>' + rarities.replace(/,/gi, '</li><li>') + '</li></ul>';
+    document.getElementById("raritiesDiv").innerHTML = rarities_html;
+
     var nftInfo = document.getElementById("NFTinfo");
     var nft_title = document.getElementById("NFTtitle");
     var nft_planet_name = document.createElement('p');
@@ -79,11 +82,7 @@ function init(imageURL, heightmap, background, name, planetName, rarities) {
 
     nft_link.setAttribute("href", imageURL);
     nft_link.setAttribute("target", "_blank");
-
-    rarities_html = '<b>Rarities: </b><ul><li>' + rarities.replace(/,/gi, '</li><li>') + '</li></ul>';
-    document.getElementById("raritiesDiv").innerHTML = rarities_html;
-
-
+    
 
     image.crossOrigin = "anonymous";
     image.src = imageURL;
