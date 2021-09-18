@@ -8,7 +8,7 @@ var mesh;
 // document.getElementById("share-btn").addEventListener("click",(e)=>{window.open("https://viewer.cardaworlds.io/?nft_id="+nft_id, "_blank");})
 
 
-var capturer = new CCapture({ format: 'gif', workersPath: 'screen-capture/', framerate: 15, quality: 100, name:"CardaWorld" });
+var capturer = new CCapture({ format: 'gif', workersPath: 'screen-capture/', framerate: 15, quality: 5, width:100, name:"CardaWorld" });
 // var capturer = new CCapture({ format: "webm",framerate: 20, quality: 20});
 
 
