@@ -9,7 +9,7 @@ var mesh;
 
 
 //var capturer = new CCapture({ format: 'gif', workersPath: 'screen-capture/', framerate: 30 });
-var capturer = new CCapture({ format: "webm",framerate: 40, quality: 50 });
+var capturer = new CCapture({ format: "webm",framerate: 50, quality: 60, motionBlurFrames: 16 });
 
 
 fetch("https://cardaworlds-api.herokuapp.com/CheckAsset/" + nft_id, {
