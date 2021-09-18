@@ -81,7 +81,7 @@ function init(imageURL, heightmap, background, name, planetName, rarities) {
     nft_link.setAttribute("href", imageURL);
     nft_link.setAttribute("target", "_blank");
 
-    rarities_html = '<b>Rarities: </b>:<ul><li>' + rarities.replace(/,/gi, '</li><li>') + '</li></ul>';
+    rarities_html = '<b>Rarities: </b><ul><li>' + rarities.replace(/,/gi, '</li><li>') + '</li></ul>';
     document.getElementById("raritiesDiv").innerHTML = rarities_html;
 
 
