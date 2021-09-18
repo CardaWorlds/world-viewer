@@ -31,16 +31,14 @@ fetch("https://cardaworlds-api.herokuapp.com/CheckAsset/" + nft_id, {
             "description": metadata.description,
             "name": metadata.name,
             "planetName": metadata.planetName,
-            "rarities":metadata.rarites,
+            "rarities": metadata.rarites,
             "imageURL": imageURL,
             "heightmap": "https://gw2.easy-ipfs.com/ipfs/" + metadata.files[0].src.replace("ipfs://", ""),
             "background": "https://gw2.easy-ipfs.com/ipfs/" + metadata.files[1].src.replace("ipfs://", "")
         }
-        console.log(metadata.rarities);
-        rarities_html = '<ul><li>' + metadata.rarities.replace(/,/gi,'</li><li>') + '</li></ul>';
-        document.getElementById("raritiesDiv").innerHTML = rarities_html;
 
-        init(nft_info.imageURL, nft_info.heightmap, nft_info.background, nft_info.name, nft_info.planetName);
+
+        init(nft_info.imageURL, nft_info.heightmap, nft_info.background, nft_info.name, nft_info.planetName, nft_info.rarities);
         animate();
 
     })
@@ -49,10 +47,10 @@ fetch("https://cardaworlds-api.herokuapp.com/CheckAsset/" + nft_id, {
     });
 
 
-function saveCapture(){
+function saveCapture() {
     capturer.start();
-    let button =document.getElementById("saveGIF");
-    button.disabled=true;
+    let button = document.getElementById("saveGIF");
+    button.disabled = true;
     button.innerHTML = "Recording...";
     setTimeout(function () {
         console.log("stopped");
@@ -66,9 +64,9 @@ function saveCapture(){
     }, 7000);
 
 }
-document.getElementById("saveGIF").addEventListener('click',()=>{saveCapture()});
+document.getElementById("saveGIF").addEventListener('click', () => { saveCapture() });
 
-function init(imageURL, heightmap, background, name, planetName) {
+function init(imageURL, heightmap, background, name, planetName, rarities) {
     console.log(heightmap)
     image = document.createElement('img');
     height_image = document.createElement('img');
@@ -82,10 +80,13 @@ function init(imageURL, heightmap, background, name, planetName) {
 
     nft_link.innerHTML = name;
     nftInfo.appendChild(nft_title);
-    nftInfo.appendChild(nft_planet_name)
+    nftInfo.appendChild("<b>Name: </b>" + nft_planet_name)
 
     nft_link.setAttribute("href", imageURL);
     nft_link.setAttribute("target", "_blank");
+
+    rarities_html = '<b>Rarities: </b>:<ul><li>' + rarities.replace(/,/gi, '</li><li>') + '</li></ul>';
+    document.getElementById("raritiesDiv").innerHTML = rarities_html;
 
 
 
@@ -155,10 +156,9 @@ function init(imageURL, heightmap, background, name, planetName) {
     scene.add(ambientLight);
 
     const loader = new THREE.TextureLoader();
-    loader.load(background , function(texture)
-            {
-             scene.background = texture;  
-            });
+    loader.load(background, function (texture) {
+        scene.background = texture;
+    });
 
     THREE.ImageUtils.crossOrigin = 'anonymous';
     var material = new THREE.MeshPhongMaterial({
