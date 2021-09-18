@@ -8,7 +8,9 @@ var mesh;
 // document.getElementById("share-btn").addEventListener("click",(e)=>{window.open("https://viewer.cardaworlds.io/?nft_id="+nft_id, "_blank");})
 
 
-var capturer = new CCapture({ format: 'gif', workersPath: 'screen-capture/', framerate: 30, });
+//var capturer = new CCapture({ format: 'gif', workersPath: 'screen-capture/', framerate: 30 });
+var capturer = new CCapture({ format: "webm" });
+
 
 fetch("https://cardaworlds-api.herokuapp.com/CheckAsset/" + nft_id, {
 
@@ -82,7 +84,7 @@ function init(imageURL, heightmap, background, name, planetName, rarities, galax
 
     var nft_link = document.getElementById("NFTlink");
     nft_link.innerHTML = name;
-    nftInfo.appendChild(nft_title);
+    //nftInfo.appendChild(nft_title);
     nftInfo.appendChild(nft_planet_name)
 
     nft_link.setAttribute("href", imageURL);
