@@ -31,10 +31,15 @@ fetch("https://cardaworlds-api.herokuapp.com/CheckAsset/" + nft_id, {
             "description": metadata.description,
             "name": metadata.name,
             "planetName": metadata.planetName,
+            "rarities":metadata.rarites,
             "imageURL": imageURL,
             "heightmap": "https://gw2.easy-ipfs.com/ipfs/" + metadata.files[0].src.replace("ipfs://", ""),
             "background": "https://gw2.easy-ipfs.com/ipfs/" + metadata.files[1].src.replace("ipfs://", "")
         }
+        console.log(metadata.rarities);
+        rarities_html = '<ul><li>' + metadata.rarities.replace(/,/gi,'</li><li>') + '</li></ul>';
+        document.getElementById("raritiesDiv").innerHTML = rarities_html;
+
         init(nft_info.imageURL, nft_info.heightmap, nft_info.background, nft_info.name, nft_info.planetName);
         animate();
 
