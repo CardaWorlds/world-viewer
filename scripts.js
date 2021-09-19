@@ -10,7 +10,7 @@ var gifCanvas;
 // document.getElementById("share-btn").addEventListener("click",(e)=>{window.open("https://viewer.cardaworlds.io/?nft_id="+nft_id, "_blank");})
 
 
-var capturer = new CCapture({ format: 'gif', workersPath: 'screen-capture/', framerate: 25,quality:200, name:"CardaWorld", workers:8 });
+var capturer = new CCapture({ format: 'gif', workersPath: 'screen-capture/', framerate: 30,quality:200, name:"CardaWorld", workers:8 });
 // var capturer = new CCapture({ format: "webm",framerate: 20, quality: 20});
 
 
