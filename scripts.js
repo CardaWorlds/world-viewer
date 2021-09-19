@@ -55,6 +55,7 @@ function saveCapture() {
     setTimeout(function () {
         console.log("stopped");
         button.innerHTML = "Saving...";
+        button.style.color="yellow";
         capturer.stop();
         capturer.save();
 
