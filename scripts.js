@@ -1,19 +1,21 @@
 // MatCap-style image rendered on a sphere
 
 var camera, scene, renderer;
+var gifCamera;
 var image;
 let params = new URLSearchParams(document.location.search.substring(1));
 var nft_id = params.get("nft_id");
 var mesh;
+var gifCanvas;
 // document.getElementById("share-btn").addEventListener("click",(e)=>{window.open("https://viewer.cardaworlds.io/?nft_id="+nft_id, "_blank");})
 
 
-var capturer = new CCapture({ format: 'gif', workersPath: 'screen-capture/', framerate: 10, quality: 10, width:5, name:"CardaWorld", workers:2 });
+var capturer = new CCapture({ format: 'gif', workersPath: 'screen-capture/', framerate: 25,quality:200, name:"CardaWorld", workers:8 });
 // var capturer = new CCapture({ format: "webm",framerate: 20, quality: 20});
 
 
 fetch("https://cardaworlds-api.herokuapp.com/CheckAsset/" + nft_id, {
-
+//fetch("http://127.0.0.1:5000/CheckAsset/" + nft_id, {
     "dataType": 'jsonp',
     "method": "GET"
 })
@@ -55,11 +57,8 @@ function saveCapture() {
         button.innerHTML = "Saving...";
         capturer.stop();
         capturer.save();
-        /* setTimeout(function(){
-            button.disabled=false;
-            button.innerHTML = "saveGIF";
-        },30000); */
-    }, 7000);
+
+    }, 8000);
 
 }
 document.getElementById("saveGIF").addEventListener('click', () => { saveCapture() });
@@ -124,6 +123,14 @@ function init(imageURL, heightmap, background, name, planetName, rarities, galax
 
     renderer = new THREE.WebGLRenderer({ alpha: true }); //alpha: true is used to allow backgrounds
     renderer.setSize(window.innerWidth, window.innerHeight);
+
+    gifCanvas = document.getElementById("gifCanvas")
+    gifRenderer = new THREE.WebGLRenderer({ alpha: true, canvas: gifCanvas}); //alpha: true is used to allow backgrounds
+    gifRenderer.setSize(450, 300);
+    gifCamera = new THREE.PerspectiveCamera(40, 450 / 300, 1, 1000);
+    gifCamera.position.set(0, 0, 150);
+
+
     document.body.appendChild(renderer.domElement);
 
 
@@ -140,10 +147,8 @@ function init(imageURL, heightmap, background, name, planetName, rarities, galax
 
 
     document.body.appendChild(image);
-    //document.body.appendChild(height_image);
 
     var texture = new THREE.Texture(image)
-    // var heightmap = new THREE.Texture(height_image)
 
     image.onload = function () {
         texture.needsUpdate = true;
@@ -174,13 +179,8 @@ function init(imageURL, heightmap, background, name, planetName, rarities, galax
         displacementScale: 5,
         shininess: 15
 
-        /* uniforms: uniforms,
-        vertexShader: document.getElementById('vertex_shader').textContent,
-        fragmentShader: document.getElementById('fragment_shader').textContent, */
     });
-    /* material.displacementMap = heightmap; 
-    material.displacementScale = 1000;  */
-    //material.normalMap   = heightmap; 
+
     var sphere = new THREE.SphereGeometry(40, 1080, 720)
 
     mesh = new THREE.Mesh(sphere, material)
@@ -213,13 +213,15 @@ function animate() {
     mesh.rotation.y = Date.now() * 0.0003;
 
     renderer.render(scene, camera);
+    gifRenderer.render(scene, gifCamera);
 
     render();
 
 }
 
 function render() {
-    capturer.capture(renderer.domElement);
+    
+    capturer.capture(gifCanvas);
     renderer.render(scene, camera);
 
 }
