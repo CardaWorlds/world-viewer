@@ -10,12 +10,12 @@ var gifCanvas;
 // document.getElementById("share-btn").addEventListener("click",(e)=>{window.open("https://viewer.cardaworlds.io/?nft_id="+nft_id, "_blank");})
 
 
-var capturer = new CCapture({ format: 'gif', workersPath: 'screen-capture/', framerate: 30,quality:200, name:"CardaWorld", workers:8 });
+var capturer = new CCapture({ format: 'gif', workersPath: 'screen-capture/', framerate: 30, quality: 200, name: "CardaWorld", workers: 8 });
 // var capturer = new CCapture({ format: "webm",framerate: 20, quality: 20});
 
 
 fetch("https://cardaworlds-api.herokuapp.com/CheckAsset/" + nft_id, {
-//fetch("http://127.0.0.1:5000/CheckAsset/" + nft_id, {
+    //fetch("http://127.0.0.1:5000/CheckAsset/" + nft_id, {
     "dataType": 'jsonp',
     "method": "GET"
 })
@@ -31,7 +31,7 @@ fetch("https://cardaworlds-api.herokuapp.com/CheckAsset/" + nft_id, {
             "description": metadata.description,
             "name": metadata.name,
             "planetName": metadata.planetName,
-            "galaxyType":metadata.galaxyType,
+            "galaxyType": metadata.galaxyType,
             "rarities": metadata.rarities,
             "imageURL": imageURL,
             "heightmap": "https://gw2.easy-ipfs.com/ipfs/" + metadata.files[0].src.replace("ipfs://", ""),
@@ -55,7 +55,7 @@ function saveCapture() {
     setTimeout(function () {
         console.log("stopped");
         button.innerHTML = "Saving...";
-        button.style.color="yellow";
+        button.style.color = "yellow";
         capturer.stop();
         capturer.save();
 
@@ -69,7 +69,7 @@ function init(imageURL, heightmap, background, name, planetName, rarities, galax
     image = document.createElement('img');
     height_image = document.createElement('img');
 
-    
+
 
     var nftInfo = document.getElementById("NFTinfo");
     var nft_title = document.getElementById("NFTtitle");
@@ -89,11 +89,11 @@ function init(imageURL, heightmap, background, name, planetName, rarities, galax
 
     nft_link.setAttribute("href", imageURL);
     nft_link.setAttribute("target", "_blank");
-    
+
     rarities_html = '<b>Rarities: </b><ul><li>' + rarities.replace(/,/gi, '</li><li>') + '</li></ul>';
     document.getElementById("raritiesDiv").innerHTML = rarities_html;
-    
-    
+
+
 
     image.crossOrigin = "anonymous";
     image.src = imageURL;
@@ -126,10 +126,10 @@ function init(imageURL, heightmap, background, name, planetName, rarities, galax
     renderer.setSize(window.innerWidth, window.innerHeight);
 
     gifCanvas = document.getElementById("gifCanvas")
-    gifRenderer = new THREE.WebGLRenderer({ alpha: true, canvas: gifCanvas}); //alpha: true is used to allow backgrounds
+    gifRenderer = new THREE.WebGLRenderer({ alpha: true, canvas: gifCanvas }); //alpha: true is used to allow backgrounds
     gifRenderer.setSize(450, 300);
     gifCamera = new THREE.PerspectiveCamera(40, 450 / 300, 1, 1000);
-    gifCamera.position.set(0, 0, 150);
+    gifCamera.position.set(0, 0, 200);
 
 
     document.body.appendChild(renderer.domElement);
@@ -138,11 +138,11 @@ function init(imageURL, heightmap, background, name, planetName, rarities, galax
 
     scene = new THREE.Scene();
 
-    camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 1, 1000);
-    camera.position.set(0, 0, 150);
+    camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 1, 1000);
+    camera.position.set(0, 0, 200);
 
     controls = new THREE.OrbitControls(camera, renderer.domElement);
-    controls.minDistance = 75;
+    controls.minDistance = 110;
     controls.maxDistance = 200;
     controls.enablePan = false;
 
@@ -159,7 +159,7 @@ function init(imageURL, heightmap, background, name, planetName, rarities, galax
         "tex": { value: texture }
     };
 
-    var light = new THREE.DirectionalLight(0x404040, 3);
+    var light = new THREE.DirectionalLight(0x404040, 4);
     light.position.set(50, 50, 40);
     scene.add(light);
 
@@ -167,40 +167,48 @@ function init(imageURL, heightmap, background, name, planetName, rarities, galax
     scene.add(ambientLight);
 
     const loader = new THREE.TextureLoader();
-    loader.load(background, function (texture) {
+    /* loader.load(background, function (texture) {
         scene.background = texture;
-    });
+    }); */
+
+    var blue_bg = "space_blue.jpg"
+    var purple_bg = "space_purple.jpg";
+    var gold_bg = "space_golden.jpg";
+    var bg = galaxyType == "blue" ? blue_bg : (galaxyType == "gold" ? gold_bg : purple_bg);
+    //Space background is a large sphere
+    var spacetex = loader.load(bg);
+    var spacesphereGeo = new THREE.SphereGeometry(250, 1080, 720);
+    var spacesphereMat = new THREE.MeshPhongMaterial();
+    spacesphereMat.map = spacetex;
+
+    var spacesphere = new THREE.Mesh(spacesphereGeo, spacesphereMat);
+
+    //spacesphere needs to be double sided as the camera is within the spacesphere
+    spacesphere.material.side = THREE.DoubleSide;
+
+    spacesphere.material.map.wrapS = THREE.RepeatWrapping;
+    spacesphere.material.map.wrapT = THREE.RepeatWrapping;
+    spacesphere.material.map.repeat.set(3, 3);
+
+    scene.add(spacesphere);
+
 
     THREE.ImageUtils.crossOrigin = 'anonymous';
     var material = new THREE.MeshPhongMaterial({
         map: loader.load(imageURL),
         bumpMap: loader.load(heightmap),
-        bumpScale: 1.2,
+        bumpScale: 1.8,
         displacementMap: loader.load(heightmap),
-        displacementScale: 5,
+        displacementScale: 8,
         shininess: 15
 
     });
 
-    var sphere = new THREE.SphereGeometry(40, 1080, 720)
+    var sphere = new THREE.SphereGeometry(80, 1080, 720)
 
     mesh = new THREE.Mesh(sphere, material)
-    /* if ( mesh.isMesh ) {
-        const position = mesh.geometry.attributes.position;
-        position.needsUpdate = true
-        const vector = new THREE.Vector3();
-        console.log(position)
-        console.log(vector.fromBufferAttribute(position,100020));
-        for ( let i = 0, l = position.count; i < l; i ++ ){
-           var p =vector.fromBufferAttribute( position, i );
-           mesh.geometry.attributes.position.normalized=true;
-        }
-     
-     } */
-
 
     scene.add(mesh);
-
 
 
 }
@@ -221,7 +229,7 @@ function animate() {
 }
 
 function render() {
-    
+
     capturer.capture(gifCanvas);
     renderer.render(scene, camera);
 

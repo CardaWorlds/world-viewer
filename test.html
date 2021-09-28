@@ -1,0 +1,414 @@
+<!doctype html>
+
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>CardaWorld Viewer</title>
+    <meta name="description" content="CardaWorld viewer">
+    <meta name="author" content="CardaWorlds">
+
+    <meta property="og:title" content="CardaWorlds CNFT viewer">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https:/cardaworlds.io">
+    <meta property="og:description" content="CardaWorlds CNFT viewer">
+
+    <script src="https://threejs.org/build/three.min.js"></script>
+    <script src="https://threejs.org/examples/js/controls/OrbitControls.js"></script>
+
+    <script type="text/javascript" src="screen-capture/Tween.js"></script>
+    <script type="text/javascript" src="screen-capture/Detector.js"></script>
+    <!-- Include gifjs if you want to export GIF -->
+    <script src="screen-capture/gif.js"></script>
+
+
+
+    <script type="text/javascript" src="screen-capture/CCapture.all.min.js"></script>
+
+</head>
+
+<style>
+    body {
+        background-color: #000;
+        margin: 0px;
+        overflow: hidden;
+        background-size: cover;
+        opacity: 1;
+    }
+
+    a {
+        color: inherit;
+        font-family: inherit;
+        font-size: inherit;
+        text-decoration: none;
+    }
+
+    img {
+        width: 300px;
+        height: 200px;
+        max-width: 30vw;
+        max-height: 20vw !important;
+        position: absolute;
+        left: 0px;
+        top: 0px;
+        z-index: 1;
+    }
+
+    .map-overlay {
+        /* position: absolute --> */
+
+        background: rgba(255, 255, 255, 0.4);
+        font-family: Helvetica, sans-serif;
+        border-radius: 4px;
+        z-index: 80;
+        width: auto;
+        vertical-align: middle;
+        padding: 2px;
+    }
+
+    .share-btn {
+        background-color: transparent;
+        border-color: transparent;
+        display: inline-block;
+        border: none;
+        color: white;
+        padding: 0.1em 0.6em;
+        outline: none;
+        text-align: center;
+        font-size: 0.9em;
+        margin: 0;
+        padding: 3px;
+        z-index: 1;
+        cursor: pointer;
+    }
+
+    #fullscreen {
+        height: 20px;
+        width: 20px;
+        position: relative;
+        margin: 0px;
+        z-index: 0;
+    }
+
+    #NFTinfo {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        /* text-align:center; */
+    }
+
+    #fullscreen_div {
+        position: absolute;
+        top: 50px;
+        right: 10px;
+
+    }
+
+    #NFTtitle {
+        margin: 1px;
+    }
+
+    #saveGIF {
+        position: absolute;
+        bottom: 10px;
+        right: 10px;
+    }
+</style>
+
+<body>
+    <div id="NFTinfo" class="map-overlay">
+        <h4 id="NFTtitle"><a id="NFTlink"></a></h4>
+        <div id="raritiesDiv" style="text-align: left;"></div>
+    </div>
+    <button id="saveGIF">Create GIF</button>
+    <!-- <div class="map-overlay" id="fullscreen_div"><button class="share-btn" id="share-btn"><img id="fullscreen" src="fullscreen_icon.png"></button></div> -->
+
+    <!-- your content here... -->
+    <canvas id="gifCanvas" style="display:none;">
+    </canvas>
+    <script id="vertex_shader" type="x-shader/x-vertex">
+
+    varying vec3 vNormal;
+    
+    void main() {
+    
+        vNormal = normal;
+    
+        gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+    
+    }
+    
+    </script>
+
+    <script id="fragment_shader" type="x-shader/x-fragment">
+
+    uniform sampler2D tex;
+    
+    varying vec3 vNormal;
+    
+    void main() {
+    
+        vec2 uv = normalize( vNormal ).xy * 0.5 + 0.5;
+    
+        vec3 color = texture2D( tex, uv ).rgb;
+    
+      //  if ( vNormal.z < - 0.85 ) color = vec3( 0.777, 0.74, 0.74 ); // back of eye
+        
+        gl_FragColor = vec4( color, 1.0 );
+    
+    }
+    
+    </script>
+    <script>
+        // MatCap-style image rendered on a sphere
+
+        var camera, scene, renderer;
+        var gifCamera;
+        var image;
+        let params = new URLSearchParams(document.location.search.substring(1));
+        var nft_id = params.get("nft_id");
+        var mesh;
+        var gifCanvas;
+        // document.getElementById("share-btn").addEventListener("click",(e)=>{window.open("https://viewer.cardaworlds.io/?nft_id="+nft_id, "_blank");})
+
+
+        var capturer = new CCapture({ format: 'gif', workersPath: 'screen-capture/', framerate: 30, quality: 200, name: "CardaWorld", workers: 8 });
+        // var capturer = new CCapture({ format: "webm",framerate: 20, quality: 20});
+
+
+        /* fetch("https://cardaworlds-api.herokuapp.com/CheckAsset/" + nft_id, {
+            //fetch("http://127.0.0.1:5000/CheckAsset/" + nft_id, {
+            "dataType": 'jsonp',
+            "method": "GET"
+        })
+            .then(response => response.json())
+            .then(response => {
+                console.log(response);
+                var metadata = response.onchain_metadata;
+                var image_ipfs = metadata.image.replace("ipfs://", "")
+                var imageURL = "https://gw2.easy-ipfs.com/ipfs/" + image_ipfs
+                var nft_info = {
+                    "asset_id": response.asset,
+                    "asset_name": response.name,
+                    "description": metadata.description,
+                    "name": metadata.name,
+                    "planetName": metadata.planetName,
+                    "galaxyType": metadata.galaxyType,
+                    "rarities": metadata.rarities,
+                    "imageURL": imageURL,
+                    "heightmap": "https://gw2.easy-ipfs.com/ipfs/" + metadata.files[0].src.replace("ipfs://", ""),
+                    "background": "https://gw2.easy-ipfs.com/ipfs/" + metadata.files[1].src.replace("ipfs://", "")
+                }
+
+                init(nft_info.imageURL, nft_info.heightmap, nft_info.background, nft_info.name, nft_info.planetName, nft_info.rarities, nft_info.galaxyType);
+                animate();
+
+            })
+            .catch(err => {
+                console.log(err);
+            });
+ */
+
+        function saveCapture() {
+            capturer.start();
+            let button = document.getElementById("saveGIF");
+            button.disabled = true;
+            button.innerHTML = "Recording...";
+            setTimeout(function () {
+                console.log("stopped");
+                button.innerHTML = "Saving...";
+                button.style.color = "yellow";
+                capturer.stop();
+                capturer.save();
+
+            }, 8000);
+
+        }
+        document.getElementById("saveGIF").addEventListener('click', () => { saveCapture() });
+
+
+        init("https://infura-ipfs.io/ipfs/QmNp67V9bu7KkGHmA6gq8Q4QRQEoT6xGUuk2VMta84hRf5", "https://infura-ipfs.io/ipfs/QmNmsyNWeWDmtdnveDKDpRbRjHGFXMmkEqiK9N8KQXbmza", "https://infura-ipfs.io/ipfs/QmNrKdgPFB1XSfkrVJvscBpRKXhkNWARn1SR5Wx8gNBdnD", "CardaWorld", "BitBoy Prime", "rarities, list", "gold");
+        animate();
+        function init(imageURL, heightmap, background, name, planetName, rarities, galaxyType) {
+
+
+            console.log(heightmap)
+            image = document.createElement('img');
+            height_image = document.createElement('img');
+
+
+
+            var nftInfo = document.getElementById("NFTinfo");
+            var nft_title = document.getElementById("NFTtitle");
+
+            var background_color = document.createElement('p');
+            background_color.innerHTML = "<b>Galaxy type: </b>" + galaxyType;
+            nftInfo.appendChild(background_color);
+
+            var nft_planet_name = document.createElement('p');
+            nft_planet_name.innerHTML = "<b>Name: </b>" + planetName;
+
+
+            var nft_link = document.getElementById("NFTlink");
+            nft_link.innerHTML = name;
+            //nftInfo.appendChild(nft_title);
+            nftInfo.appendChild(nft_planet_name)
+
+            nft_link.setAttribute("href", imageURL);
+            nft_link.setAttribute("target", "_blank");
+
+            rarities_html = '<b>Rarities: </b><ul><li>' + rarities.replace(/,/gi, '</li><li>') + '</li></ul>';
+            document.getElementById("raritiesDiv").innerHTML = rarities_html;
+
+
+
+            image.crossOrigin = "anonymous";
+            image.src = imageURL;
+            image.width = 720;
+            image.height = 1080;
+            image.style.maxHeight = "30%";
+            image.style.maxWeight = "30%";
+
+            height_image.crossOrigin = "anonymous";
+            height_image.src = heightmap;
+            height_image.width = 720;
+            height_image.height = 1080;
+
+            //document.body.style.backgroundImage = "url(" + background + ")";
+
+            info = document.createElement('div');
+            info.style.position = 'absolute';
+            info.style.top = '30px';
+            info.style.width = '100%';
+            info.style.textAlign = 'center';
+            info.style.color = '#fff';
+            info.style.fontWeight = 'bold';
+            info.style.backgroundColor = 'transparent';
+            info.style.zIndex = '1';
+            info.style.fontFamily = 'Monospace';
+            //info.innerHTML = 'Drag mouse to rotate camera; scroll to zoom';
+            document.body.appendChild(info);
+
+            renderer = new THREE.WebGLRenderer({ alpha: true }); //alpha: true is used to allow backgrounds
+            renderer.setSize(window.innerWidth, window.innerHeight);
+
+            gifCanvas = document.getElementById("gifCanvas")
+            gifRenderer = new THREE.WebGLRenderer({ alpha: true, canvas: gifCanvas }); //alpha: true is used to allow backgrounds
+            gifRenderer.setSize(450, 300);
+            gifCamera = new THREE.PerspectiveCamera(40, 450 / 300, 1, 1000);
+            gifCamera.position.set(0, 0, 200);
+
+
+            document.body.appendChild(renderer.domElement);
+
+
+
+            scene = new THREE.Scene();
+
+            camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 1, 1000);
+            camera.position.set(0, 0, 200);
+
+            controls = new THREE.OrbitControls(camera, renderer.domElement);
+            controls.minDistance = 110;
+            controls.maxDistance = 200;
+            controls.enablePan = false;
+
+
+            document.body.appendChild(image);
+
+            var texture = new THREE.Texture(image)
+
+            image.onload = function () {
+                texture.needsUpdate = true;
+            };
+
+            var uniforms = {
+                "tex": { value: texture }
+            };
+
+            var light = new THREE.DirectionalLight(0x404040, 4);
+            light.position.set(50, 50, 40);
+            scene.add(light);
+
+            var ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+            scene.add(ambientLight);
+
+            const loader = new THREE.TextureLoader();
+            /* loader.load(background, function (texture) {
+                scene.background = texture;
+            }); */
+
+            var blue_bg="space_blue.jpg"
+            var purple_bg = "space_purple.jpg";
+            var gold_bg="space_golden.jpg";
+            var bg = galaxyType =="blue" ? blue_bg : (galaxyType =="gold" ? gold_bg : purple_bg);
+            //Space background is a large sphere
+            var spacetex = loader.load(bg);
+            var spacesphereGeo = new THREE.SphereGeometry(250, 1080, 720);
+            var spacesphereMat = new THREE.MeshPhongMaterial();
+            spacesphereMat.map = spacetex;
+
+            var spacesphere = new THREE.Mesh(spacesphereGeo, spacesphereMat);
+
+            //spacesphere needs to be double sided as the camera is within the spacesphere
+            spacesphere.material.side = THREE.DoubleSide;
+
+            spacesphere.material.map.wrapS = THREE.RepeatWrapping;
+            spacesphere.material.map.wrapT = THREE.RepeatWrapping;
+            spacesphere.material.map.repeat.set(3, 3);
+
+            scene.add(spacesphere);
+
+
+            THREE.ImageUtils.crossOrigin = 'anonymous';
+            var material = new THREE.MeshPhongMaterial({
+                map: loader.load(imageURL),
+                bumpMap: loader.load(heightmap),
+                bumpScale: 1.8,
+                displacementMap: loader.load(heightmap),
+                displacementScale: 8,
+                shininess: 15
+
+            });
+
+            var sphere = new THREE.SphereGeometry(80, 1080, 720)
+
+            mesh = new THREE.Mesh(sphere, material)
+
+            scene.add(mesh);
+
+
+
+
+        }
+
+        function animate() {
+
+            requestAnimationFrame(animate);
+
+            //controls.update(); // not required here
+            mesh.rotation.x = 0.000001;
+            mesh.rotation.y = Date.now() * 0.0003;
+
+            renderer.render(scene, camera);
+            gifRenderer.render(scene, gifCamera);
+
+            render();
+
+        }
+
+        function render() {
+
+            capturer.capture(gifCanvas);
+            renderer.render(scene, camera);
+
+        }
+
+
+
+    </script>
+</body>
+
+</html>
