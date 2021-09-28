@@ -188,7 +188,7 @@ function init(imageURL, heightmap, background, name, planetName, rarities, galax
 
     spacesphere.material.map.wrapS = THREE.RepeatWrapping;
     spacesphere.material.map.wrapT = THREE.RepeatWrapping;
-    spacesphere.material.map.repeat.set(3, 3);
+    spacesphere.material.map.repeat.set(5, 3);
 
     scene.add(spacesphere);
 
