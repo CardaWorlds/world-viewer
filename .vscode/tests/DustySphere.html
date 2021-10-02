@@ -77,12 +77,12 @@ function canvasApp() {
 	function init() {
 		wait = 1;
 		count = wait - 1;
-		numToAddEachFrame = 80;
+		numToAddEachFrame = 70;
 		
 		//particle color
 		r = 255;
-		g = 255;
-		b = 255;
+		g = 195;
+		b = 245;
 		
 		rgbString = "rgba("+r+","+g+","+b+","; //partial string for color which will be completed by appending alpha value.
 		particleAlpha = 1; //maximum alpha
@@ -144,8 +144,8 @@ function canvasApp() {
 				
 				//we set some "envelope" parameters which will control the evolving alpha of the particles.
 				p.attack = 0;
-				p.hold = 90;
-				p.decay = 80;
+				p.hold = 120;
+				p.decay = 110;
 				p.initValue = 5;
 				p.holdValue = particleAlpha;
 				p.lastValue = 0;

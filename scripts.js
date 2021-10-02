@@ -122,11 +122,11 @@ function init(imageURL, heightmap, background, name, planetName, rarities, galax
     //info.innerHTML = 'Drag mouse to rotate camera; scroll to zoom';
     document.body.appendChild(info);
 
-    renderer = new THREE.WebGLRenderer({ alpha: true }); //alpha: true is used to allow backgrounds
+    renderer = new THREE.WebGLRenderer({ alpha: true, antialias:true }); //alpha: true is used to allow backgrounds
     renderer.setSize(window.innerWidth, window.innerHeight);
 
     gifCanvas = document.getElementById("gifCanvas")
-    gifRenderer = new THREE.WebGLRenderer({ alpha: true, canvas: gifCanvas }); //alpha: true is used to allow backgrounds
+    gifRenderer = new THREE.WebGLRenderer({ alpha: true, canvas: gifCanvas,antialias:true }); //alpha: true is used to allow backgrounds
     gifRenderer.setSize(450, 300);
     gifCamera = new THREE.PerspectiveCamera(40, 450 / 300, 1, 1000);
     gifCamera.position.set(0, 0, 248);

@@ -128,37 +128,25 @@
     <!-- your content here... -->
     <canvas id="gifCanvas" style="display:none;">
     </canvas>
-    <script id="vertex_shader" type="x-shader/x-vertex">
-
+   <!-- ---------------- Custom Shader Code ------------------------ -->
+   <script id="vertexShader" type="x-shader/x-vertex">
     varying vec3 vNormal;
-    
-    void main() {
-    
-        vNormal = normal;
-    
+    void main() 
+    {
+        vNormal = normalize( normalMatrix * normal );
         gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
-    
     }
-    
     </script>
 
-    <script id="fragment_shader" type="x-shader/x-fragment">
-
-    uniform sampler2D tex;
-    
+    <!-- fragment shader a.k.a. pixel shader -->
+    <script id="fragmentShader" type="x-shader/x-vertex">
     varying vec3 vNormal;
-    
-    void main() {
-    
-        vec2 uv = normalize( vNormal ).xy * 0.5 + 0.5;
-    
-        vec3 color = texture2D( tex, uv ).rgb;
-    
-      //  if ( vNormal.z < - 0.85 ) color = vec3( 0.777, 0.74, 0.74 ); // back of eye
-        
-        gl_FragColor = vec4( color, 1.0 );
-    
+    void main() 
+    {
+        float intensity = pow( 0.7 - dot( vNormal, vec3( 0.0, 0.0, 1.0 ) ), 4.0 ); 
+        gl_FragColor = vec4( 0.96, 0.576, 0.1019, 1.3 ) * intensity;
     }
+    
     
     </script>
     <script src="scripts.js"></script>
