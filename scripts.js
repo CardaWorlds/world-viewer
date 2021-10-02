@@ -122,11 +122,11 @@ function init(imageURL, heightmap, background, name, planetName, rarities, galax
     //info.innerHTML = 'Drag mouse to rotate camera; scroll to zoom';
     document.body.appendChild(info);
 
-    renderer = new THREE.WebGLRenderer({ alpha: true, antialias:true }); //alpha: true is used to allow backgrounds
+    renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true }); //alpha: true is used to allow backgrounds
     renderer.setSize(window.innerWidth, window.innerHeight);
 
     gifCanvas = document.getElementById("gifCanvas")
-    gifRenderer = new THREE.WebGLRenderer({ alpha: true, canvas: gifCanvas,antialias:true }); //alpha: true is used to allow backgrounds
+    gifRenderer = new THREE.WebGLRenderer({ alpha: true, canvas: gifCanvas, antialias: true }); //alpha: true is used to allow backgrounds
     gifRenderer.setSize(450, 300);
     gifCamera = new THREE.PerspectiveCamera(40, 450 / 300, 1, 1000);
     gifCamera.position.set(0, 0, 248);
@@ -209,6 +209,32 @@ function init(imageURL, heightmap, background, name, planetName, rarities, galax
     mesh = new THREE.Mesh(sphere, material)
 
     scene.add(mesh);
+
+    // create custom material from the shader code above, used to add glowing atmosphere
+    //   that is within specially labeled script tags
+    var atmosphereColors="(0.5,0.6,1,1)";
+
+    var fragmentShader = `varying vec3 vNormal;
+    void main() 
+    {
+        float intensity = pow( 0.7 - dot( vNormal, vec3( 0.0, 0.0, 1.0 ) ), 4.0 ); 
+        gl_FragColor = vec4${atmosphereColors} * intensity;
+    }`;
+
+    var customMaterial = new THREE.ShaderMaterial(
+        {
+            uniforms: {},
+            vertexShader: document.getElementById('vertexShader').textContent,
+            fragmentShader: fragmentShader,
+            side: THREE.BackSide,
+            blending: THREE.AdditiveBlending,
+            transparent: true
+        });
+
+    var ballGeometry = new THREE.SphereGeometry(95, 1080, 720);
+    var ball = new THREE.Mesh(ballGeometry, customMaterial);
+
+    scene.add(ball);
 
 
 }
