@@ -144,6 +144,8 @@ function init(imageURL, heightmap, background, name, planetName, rarities, galax
     controls = new THREE.OrbitControls(camera, renderer.domElement);
     controls.minDistance = 110;
     controls.maxDistance = 200;
+    controls.maxPolarAngle =1.8;
+    controls.minPolarAngle =1.2;
     controls.enablePan = false;
 
 
