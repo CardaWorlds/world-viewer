@@ -109,6 +109,9 @@
     #NFTtitle {
         margin: 1px;
     }
+    #NFTlink:hover {
+        color:blue !important;
+    }
 
     #saveGIF {
         position: absolute;
@@ -119,7 +122,7 @@
 
 <body>
     <div id="NFTinfo" class="map-overlay">
-        <h4 id="NFTtitle"><a id="NFTlink"></a></h4>
+        <h4 id="NFTtitle" style="width:100%; text-align: center;"><a id="NFTlink"></a></h4>
         <div id="raritiesDiv" style="text-align: left;"></div>
     </div>
     <button id="saveGIF">Create GIF</button>
@@ -128,36 +131,14 @@
     <!-- your content here... -->
     <canvas id="gifCanvas" style="display:none;">
     </canvas>
-    <script id="vertex_shader" type="x-shader/x-vertex">
-
+    <!-- ---------------- Custom Shader Code ------------------------ -->
+   <script id="vertexShader" type="x-shader/x-vertex">
     varying vec3 vNormal;
-    
-    void main() {
-    
-        vNormal = normal;
-    
+    void main() 
+    {
+        vNormal = normalize( normalMatrix * normal );
         gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
-    
-    }
-    
-    </script>
-
-    <script id="fragment_shader" type="x-shader/x-fragment">
-
-    uniform sampler2D tex;
-    
-    varying vec3 vNormal;
-    
-    void main() {
-    
-        vec2 uv = normalize( vNormal ).xy * 0.5 + 0.5;
-    
-        vec3 color = texture2D( tex, uv ).rgb;
-    
-      //  if ( vNormal.z < - 0.85 ) color = vec3( 0.777, 0.74, 0.74 ); // back of eye
         
-        gl_FragColor = vec4( color, 1.0 );
-    
     }
     
     </script>
@@ -229,156 +210,212 @@
         document.getElementById("saveGIF").addEventListener('click', () => { saveCapture() });
 
 
-        init("https://infura-ipfs.io/ipfs/QmNp67V9bu7KkGHmA6gq8Q4QRQEoT6xGUuk2VMta84hRf5", "https://infura-ipfs.io/ipfs/QmNmsyNWeWDmtdnveDKDpRbRjHGFXMmkEqiK9N8KQXbmza", "https://infura-ipfs.io/ipfs/QmNrKdgPFB1XSfkrVJvscBpRKXhkNWARn1SR5Wx8gNBdnD", "CardaWorld", "BitBoy Prime", "rarities, list", "gold");
+        init("CardaWorld1650.png", "heightmap_1650.png", "https://infura-ipfs.io/ipfs/QmNrKdgPFB1XSfkrVJvscBpRKXhkNWARn1SR5Wx8gNBdnD", "CardaWorld", "BitBoy Prime", "Mushroom forest, Gold, Volcanoes, Cryptonic atmosphere", "purple");
         animate();
         function init(imageURL, heightmap, background, name, planetName, rarities, galaxyType) {
 
 
             console.log(heightmap)
-            image = document.createElement('img');
-            height_image = document.createElement('img');
+    image = document.createElement('img');
+    height_image = document.createElement('img');
 
 
 
-            var nftInfo = document.getElementById("NFTinfo");
-            var nft_title = document.getElementById("NFTtitle");
+    var nftInfo = document.getElementById("NFTinfo");
+    var nft_title = document.getElementById("NFTtitle");
 
-            var background_color = document.createElement('p');
-            background_color.innerHTML = "<b>Galaxy type: </b>" + galaxyType;
-            nftInfo.appendChild(background_color);
+    var background_color = document.createElement('p');
+    background_color.innerHTML = "<b>Galaxy type: </b>" + galaxyType;
+    nftInfo.appendChild(background_color);
 
-            var nft_planet_name = document.createElement('p');
-            nft_planet_name.innerHTML = "<b>Name: </b>" + planetName;
-
-
-            var nft_link = document.getElementById("NFTlink");
-            nft_link.innerHTML = name;
-            //nftInfo.appendChild(nft_title);
-            nftInfo.appendChild(nft_planet_name)
-
-            nft_link.setAttribute("href", imageURL);
-            nft_link.setAttribute("target", "_blank");
-
-            rarities_html = '<b>Rarities: </b><ul><li>' + rarities.replace(/,/gi, '</li><li>') + '</li></ul>';
-            document.getElementById("raritiesDiv").innerHTML = rarities_html;
+    var nft_planet_name = document.createElement('p');
+    nft_planet_name.innerHTML = "<b>Name: </b>" + planetName;
 
 
+    var nft_link = document.getElementById("NFTlink");
+    nft_link.innerHTML = name;
+    //nftInfo.appendChild(nft_title);
+    nftInfo.appendChild(nft_planet_name)
 
-            image.crossOrigin = "anonymous";
-            image.src = imageURL;
-            image.width = 720;
-            image.height = 1080;
-            image.style.maxHeight = "30%";
-            image.style.maxWeight = "30%";
+    nft_link.setAttribute("href", imageURL);
+    nft_link.setAttribute("target", "_blank");
 
-            height_image.crossOrigin = "anonymous";
-            height_image.src = heightmap;
-            height_image.width = 720;
-            height_image.height = 1080;
-
-            //document.body.style.backgroundImage = "url(" + background + ")";
-
-            info = document.createElement('div');
-            info.style.position = 'absolute';
-            info.style.top = '30px';
-            info.style.width = '100%';
-            info.style.textAlign = 'center';
-            info.style.color = '#fff';
-            info.style.fontWeight = 'bold';
-            info.style.backgroundColor = 'transparent';
-            info.style.zIndex = '1';
-            info.style.fontFamily = 'Monospace';
-            //info.innerHTML = 'Drag mouse to rotate camera; scroll to zoom';
-            document.body.appendChild(info);
-
-            renderer = new THREE.WebGLRenderer({ alpha: true }); //alpha: true is used to allow backgrounds
-            renderer.setSize(window.innerWidth, window.innerHeight);
-
-            gifCanvas = document.getElementById("gifCanvas")
-            gifRenderer = new THREE.WebGLRenderer({ alpha: true, canvas: gifCanvas }); //alpha: true is used to allow backgrounds
-            gifRenderer.setSize(450, 300);
-            gifCamera = new THREE.PerspectiveCamera(40, 450 / 300, 1, 1000);
-            gifCamera.position.set(0, 0, 248);
-
-
-            document.body.appendChild(renderer.domElement);
+    rarities_html = '<b>Rarities: </b><ul><li>' + rarities.replace(/,/gi, '</li><li>') + '</li></ul>';
+    document.getElementById("raritiesDiv").innerHTML = rarities_html;
+    raritiesArray =rarities.split(", ");
+    console.log(raritiesArray);
 
 
 
-            scene = new THREE.Scene();
+    image.crossOrigin = "anonymous";
+    image.src = imageURL;
+    image.width = 720;
+    image.height = 1080;
+    image.style.maxHeight = "30%";
+    image.style.maxWeight = "30%";
 
-            camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 1, 1000);
-            camera.position.set(0, 0, 200);
+    height_image.crossOrigin = "anonymous";
+    height_image.src = heightmap;
+    height_image.width = 720;
+    height_image.height = 1080;
 
-            controls = new THREE.OrbitControls(camera, renderer.domElement);
-            controls.minDistance = 110;
-            controls.maxDistance = 200;
-            controls.enablePan = false;
+    //document.body.style.backgroundImage = "url(" + background + ")";
+
+    info = document.createElement('div');
+    info.style.position = 'absolute';
+    info.style.top = '30px';
+    info.style.width = '100%';
+    info.style.textAlign = 'center';
+    info.style.color = '#fff';
+    info.style.fontWeight = 'bold';
+    info.style.backgroundColor = 'transparent';
+    info.style.zIndex = '1';
+    info.style.fontFamily = 'Monospace';
+    //info.innerHTML = 'Drag mouse to rotate camera; scroll to zoom';
+    document.body.appendChild(info);
+
+    renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true }); //alpha: true is used to allow backgrounds
+    renderer.setSize(window.innerWidth, window.innerHeight);
+
+    gifCanvas = document.getElementById("gifCanvas")
+    gifRenderer = new THREE.WebGLRenderer({ alpha: true, canvas: gifCanvas, antialias: true }); //alpha: true is used to allow backgrounds
+    gifRenderer.setSize(450, 300);
+    gifCamera = new THREE.PerspectiveCamera(40, 450 / 300, 1, 1000);
+    gifCamera.position.set(0, 0, 248);
 
 
-            document.body.appendChild(image);
+    document.body.appendChild(renderer.domElement);
 
-            var texture = new THREE.Texture(image)
 
-            image.onload = function () {
-                texture.needsUpdate = true;
-            };
 
-            var uniforms = {
-                "tex": { value: texture }
-            };
+    scene = new THREE.Scene();
 
-            var light = new THREE.DirectionalLight(0x404040, 4);
-            light.position.set(50, 50, 40);
-            scene.add(light);
+    camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 1, 1000);
+    camera.position.set(0, 0, 200);
 
-            var ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
-            scene.add(ambientLight);
+    controls = new THREE.OrbitControls(camera, renderer.domElement);
+    controls.minDistance = 110;
+    controls.maxDistance = 200;
+    controls.maxPolarAngle =1.8;
+    controls.minPolarAngle =1.2;
+    controls.enablePan = false;
 
-            const loader = new THREE.TextureLoader();
-            /* loader.load(background, function (texture) {
-                scene.background = texture;
-            }); */
 
-            var blue_bg="space_blue.jpg"
-            var purple_bg = "space_purple.jpg";
-            var gold_bg="space_golden.jpg";
-            var bg = galaxyType =="blue" ? blue_bg : (galaxyType =="gold" ? gold_bg : purple_bg);
-            //Space background is a large sphere
-            var spacetex = loader.load(bg);
-            var spacesphereGeo = new THREE.SphereGeometry(250, 1080, 720);
-            var spacesphereMat = new THREE.MeshPhongMaterial();
-            spacesphereMat.map = spacetex;
+    document.body.appendChild(image);
 
-            var spacesphere = new THREE.Mesh(spacesphereGeo, spacesphereMat);
+    var texture = new THREE.Texture(image)
 
-            //spacesphere needs to be double sided as the camera is within the spacesphere
-            spacesphere.material.side = THREE.DoubleSide;
+    image.onload = function () {
+        texture.needsUpdate = true;
+    };
 
-            spacesphere.material.map.wrapS = THREE.RepeatWrapping;
-            spacesphere.material.map.wrapT = THREE.RepeatWrapping;
-            spacesphere.material.map.repeat.set(5, 3);
+    var uniforms = {
+        "tex": { value: texture }
+    };
 
-            scene.add(spacesphere);
+    var light = new THREE.DirectionalLight(0x404040, 4);
+    light.position.set(50, 50, 40);
+    scene.add(light);
+    light.shadow.radius=10;
+    
+    var ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
+    scene.add(ambientLight);
 
-            imageURL="test_bitboy.jpg";
-            heightmap="heightmap_bitboy.png";
-            THREE.ImageUtils.crossOrigin = 'anonymous';
-            var material = new THREE.MeshPhongMaterial({
-                map: loader.load(imageURL),
-                bumpMap: loader.load(heightmap),
-                bumpScale: 1.8,
-                displacementMap: loader.load(heightmap),
-                displacementScale: 8,
-                shininess: 15
+    const loader = new THREE.TextureLoader();
+    /* loader.load(background, function (texture) {
+        scene.background = texture;
+    }); */
 
-            });
+    var blue_bg = "space_blue.jpg"
+    var purple_bg = "space_purple.jpg";
+    var gold_bg = "space_golden.jpg";
+    var bg = galaxyType == "blue" ? blue_bg : (galaxyType == "gold" ? gold_bg : purple_bg);
+    //Space background is a large sphere
+    var spacetex = loader.load(bg);
+    var spacesphereGeo = new THREE.SphereGeometry(250, 1080, 720);
+    var spacesphereMat = new THREE.MeshPhongMaterial();
+    spacesphereMat.map = spacetex;
 
-            var sphere = new THREE.SphereGeometry(80, 1080, 720)
+    var spacesphere = new THREE.Mesh(spacesphereGeo, spacesphereMat);
 
-            mesh = new THREE.Mesh(sphere, material)
+    //spacesphere needs to be double sided as the camera is within the spacesphere
+    spacesphere.material.side = THREE.DoubleSide;
 
-            scene.add(mesh);
+    spacesphere.material.map.wrapS = THREE.RepeatWrapping;
+    spacesphere.material.map.wrapT = THREE.RepeatWrapping;
+    spacesphere.material.map.repeat.set(5, 3);
+
+    scene.add(spacesphere);
+
+    
+    var texture =loader.load(imageURL);
+    texture.anisotropy = renderer.capabilities.getMaxAnisotropy();
+    texture.minFilter =  THREE.LinearMipmapLinearFilter;
+
+    var heightmapTexture =loader.load(heightmap);
+    //heightmapTexture.anisotropy = renderer.capabilities.getMaxAnisotropy();
+    heightmapTexture.minFilter =  THREE.LinearFilter;
+    
+    THREE.ImageUtils.crossOrigin = 'anonymous';
+    var material = new THREE.MeshPhongMaterial({
+        map: texture,
+        //bumpMap: loader.load(heightmapTexture),
+        bumpScale: 8,
+        displacementMap: heightmapTexture,
+        displacementScale: 3,
+        shininess: 2
+
+
+    });
+
+    var sphere = new THREE.SphereGeometry(80, 2000, 720)
+    
+
+
+    mesh = new THREE.Mesh(sphere, material)
+    mesh.material.map.wrapS = THREE.RepeatWrapping;
+    mesh.material.map.wrapT = THREE.RepeatWrapping;
+    mesh.material.map.repeat.set(1, 1);
+    
+    mesh.material.flatShading = false;
+    mesh.geometry.computeVertexNormals(true);
+
+    scene.add(mesh);
+
+    // create custom material from the shader code above, used to add glowing atmosphere
+    //   that is within specially labeled script tags
+
+    if(raritiesArray.includes("Cryptonic atmosphere")){
+        var atmosphereColors="( 0.74, 0.143, 0.1, 1.4 )";
+        var glowRadius=105;
+
+    }else{
+        var atmosphereColors="(0.5,0.6,1,1)";
+        var glowRadius=98;
+
+    }
+
+    var fragmentShader = `varying vec3 vNormal;
+    void main() 
+    {
+        float intensity = pow( 0.7 - dot( vNormal, vec3( 0.0, 0.0, 1.0 ) ), 4.0 ); 
+        gl_FragColor = vec4${atmosphereColors} * intensity;
+    }`;
+
+    var customMaterial = new THREE.ShaderMaterial(
+        {
+            uniforms: {},
+            vertexShader: document.getElementById('vertexShader').textContent,
+            fragmentShader: fragmentShader,
+            side: THREE.BackSide,
+            blending: THREE.AdditiveBlending,
+            transparent: true
+        });
+
+    var ballGeometry = new THREE.SphereGeometry(glowRadius, 1080, 720);
+    var ball = new THREE.Mesh(ballGeometry, customMaterial);
+
+    scene.add(ball);
 
 
 
@@ -404,6 +441,7 @@
 
             capturer.capture(gifCanvas);
             renderer.render(scene, camera);
+            renderer.setPixelRatio( window.devicePixelRatio );
 
         }
 

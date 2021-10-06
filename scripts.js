@@ -92,6 +92,8 @@ function init(imageURL, heightmap, background, name, planetName, rarities, galax
 
     rarities_html = '<b>Rarities: </b><ul><li>' + rarities.replace(/,/gi, '</li><li>') + '</li></ul>';
     document.getElementById("raritiesDiv").innerHTML = rarities_html;
+    raritiesArray =rarities.split(",");
+    console.log(raritiesArray);
 
 
 
@@ -152,6 +154,8 @@ function init(imageURL, heightmap, background, name, planetName, rarities, galax
     document.body.appendChild(image);
 
     var texture = new THREE.Texture(image)
+    texture.anisotropy = renderer.capabilities.getMaxAnisotropy();
+    texture.minFilter =  THREE.LinearMipmapLinearFilter;
 
     image.onload = function () {
         texture.needsUpdate = true;
@@ -164,8 +168,9 @@ function init(imageURL, heightmap, background, name, planetName, rarities, galax
     var light = new THREE.DirectionalLight(0x404040, 4);
     light.position.set(50, 50, 40);
     scene.add(light);
+    light.shadow.radius=10;
 
-    var ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+    var ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
     scene.add(ambientLight);
 
     const loader = new THREE.TextureLoader();
@@ -214,7 +219,15 @@ function init(imageURL, heightmap, background, name, planetName, rarities, galax
 
     // create custom material from the shader code above, used to add glowing atmosphere
     //   that is within specially labeled script tags
-    var atmosphereColors="(0.5,0.6,1,1)";
+    if(raritiesArray.includes("Radioactive atmosphere")){
+        var atmosphereColors="( 0.96, 0.576, 0.1019, 1.3 )";
+        var glowRadius=105;
+
+    }else{
+        var atmosphereColors="(0.5,0.6,1,1)";
+        var glowRadius=98;
+
+    }
 
     var fragmentShader = `varying vec3 vNormal;
     void main() 
@@ -233,7 +246,7 @@ function init(imageURL, heightmap, background, name, planetName, rarities, galax
             transparent: true
         });
 
-    var ballGeometry = new THREE.SphereGeometry(95, 1080, 720);
+    var ballGeometry = new THREE.SphereGeometry(glowRadius, 1080, 720);
     var ball = new THREE.Mesh(ballGeometry, customMaterial);
 
     scene.add(ball);
