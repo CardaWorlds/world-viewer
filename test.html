@@ -294,6 +294,8 @@
     camera.position.set(0, 0, 200);
 
     controls = new THREE.OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.05;
     controls.minDistance = 110;
     controls.maxDistance = 200;
     controls.maxPolarAngle =1.8;
@@ -327,38 +329,29 @@
         scene.background = texture;
     }); */
 
-    var blue_bg = "space_blue.jpg"
-    var purple_bg = "space_purple.jpg";
-    var gold_bg = "space_golden.jpg";
-    var bg = galaxyType == "blue" ? blue_bg : (galaxyType == "gold" ? gold_bg : purple_bg);
-    //Space background is a large sphere
-    var spacetex = loader.load(bg);
-    var spacesphereGeo = new THREE.SphereBufferGeometry(250, 1080, 720);
-    var spacesphereMat = new THREE.MeshPhongMaterial();
-    spacesphereMat.map = spacetex;
-
-    var spacesphere = new THREE.Mesh(spacesphereGeo, spacesphereMat);
-
-    //spacesphere needs to be double sided as the camera is within the spacesphere
-    spacesphere.material.side = THREE.DoubleSide;
-
-    spacesphere.material.map.wrapS = THREE.RepeatWrapping;
-    spacesphere.material.map.wrapT = THREE.RepeatWrapping;
-    spacesphere.material.map.repeat.set(5, 3);
-
-    //scene.add(spacesphere);
-
     const cubeLoader = new THREE.CubeTextureLoader();
     const spaceTexture = cubeLoader.load([
-        './resources/space-posx.jpg',
-        './resources/space-negx.jpg',
-        './resources/space-posy.jpg',
-        './resources/space-negy.jpg',
-        './resources/space-posz.jpg',
-        './resources/space-negz.jpg',
+        './resources/'+galaxyType+'-space-posx.jpg',
+        './resources/'+galaxyType+'-space-negx.jpg',
+        './resources/'+galaxyType+'-space-posy.jpg',
+        './resources/'+galaxyType+'-space-negy.jpg',
+        './resources/'+galaxyType+'-space-posz.jpg',
+        './resources/'+galaxyType+'-space-negz.jpg',
     ]);
     spaceTexture.encoding = THREE.sRGBEncoding;
     scene.background = spaceTexture;
+
+
+    THREE.ImageUtils.crossOrigin = 'anonymous';
+    var material = new THREE.MeshPhongMaterial({
+        map: loader.load(imageURL),
+        bumpMap: loader.load(heightmap),
+        bumpScale: 1.8,
+        displacementMap: loader.load(heightmap),
+        displacementScale: 8,
+        shininess: 15
+
+    });
 
     
     var texture =loader.load(imageURL);

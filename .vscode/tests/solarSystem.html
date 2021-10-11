@@ -41,8 +41,7 @@
 </style>
 
 <body>
-
-    <canvas id="c"></canvas>
+    <canvas id="c">Loading...</canvas>
     <script id="vertexShader" type="x-shader/x-vertex">
         varying vec3 vNormal;
         void main() 
@@ -74,7 +73,7 @@
 
             var controls = new THREE.OrbitControls(camera, renderer.domElement);
             controls.enableDamping = true;
-            controls.dampingFactor = 1;
+            controls.dampingFactor = 0.09;
             controls.maxPolarAngle = 1.8;
             controls.minPolarAngle = 1.2;
 
@@ -247,8 +246,8 @@
 
                     if (obj.name != "solarSystem" && obj.name != "sun" && obj.type == 'Object3D') {
                         var dist = Math.sqrt(obj.position.x * obj.position.x + obj.position.y * obj.position.y);
-                        obj.position.x = dist * Math.sin(time * 3 / dist);
-                        obj.position.y = dist * Math.cos(time * 3 / dist);
+                        obj.position.x = dist * Math.sin(time * 2 / Math.sqrt(dist));
+                        obj.position.y = dist * Math.cos(time * 2 / Math.sqrt(dist));
                     }
                 });
 
