@@ -178,26 +178,17 @@ function init(imageURL, heightmap, background, name, planetName, rarities, galax
         scene.background = texture;
     }); */
 
-    var blue_bg = "space_blue.jpg"
-    var purple_bg = "space_purple.jpg";
-    var gold_bg = "space_golden.jpg";
-    var bg = galaxyType == "blue" ? blue_bg : (galaxyType == "gold" ? gold_bg : purple_bg);
-    //Space background is a large sphere
-    var spacetex = loader.load(bg);
-    var spacesphereGeo = new THREE.SphereGeometry(250, 1080, 720);
-    var spacesphereMat = new THREE.MeshPhongMaterial();
-    spacesphereMat.map = spacetex;
-
-    var spacesphere = new THREE.Mesh(spacesphereGeo, spacesphereMat);
-
-    //spacesphere needs to be double sided as the camera is within the spacesphere
-    spacesphere.material.side = THREE.DoubleSide;
-
-    spacesphere.material.map.wrapS = THREE.RepeatWrapping;
-    spacesphere.material.map.wrapT = THREE.RepeatWrapping;
-    spacesphere.material.map.repeat.set(5, 3);
-
-    scene.add(spacesphere);
+    const cubeLoader = new THREE.CubeTextureLoader();
+    const spaceTexture = cubeLoader.load([
+        './resources/'+galaxyType+'-space-posx.jpg',
+        './resources/'+galaxyType+'-space-negx.jpg',
+        './resources/'+galaxyType+'-space-posy.jpg',
+        './resources/'+galaxyType+'-space-negy.jpg',
+        './resources/'+galaxyType+'-space-posz.jpg',
+        './resources/'+galaxyType+'-space-negz.jpg',
+    ]);
+    spaceTexture.encoding = THREE.sRGBEncoding;
+    scene.background = spaceTexture;
 
 
     THREE.ImageUtils.crossOrigin = 'anonymous';
@@ -211,7 +202,7 @@ function init(imageURL, heightmap, background, name, planetName, rarities, galax
 
     });
 
-    var sphere = new THREE.SphereGeometry(80, 1080, 720)
+    var sphere = new THREE.SphereBufferGeometry(80, 1080, 720)
 
     mesh = new THREE.Mesh(sphere, material)
 
@@ -246,7 +237,7 @@ function init(imageURL, heightmap, background, name, planetName, rarities, galax
             transparent: true
         });
 
-    var ballGeometry = new THREE.SphereGeometry(glowRadius, 1080, 720);
+    var ballGeometry = new THREE.SphereBufferGeometry(glowRadius, 1080, 720);
     var ball = new THREE.Mesh(ballGeometry, customMaterial);
 
     scene.add(ball);

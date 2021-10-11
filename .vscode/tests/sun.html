@@ -18,14 +18,6 @@
     <script src="https://threejs.org/build/three.min.js"></script>
     <script src="https://threejs.org/examples/js/controls/OrbitControls.js"></script>
 
-    <script type="text/javascript" src="screen-capture/Tween.js"></script>
-    <script type="text/javascript" src="screen-capture/Detector.js"></script>
-    <!-- Include gifjs if you want to export GIF -->
-    <script src="screen-capture/gif.js"></script>
-
-
-
-    <script type="text/javascript" src="screen-capture/CCapture.all.min.js"></script>
 
 </head>
 
@@ -142,6 +134,9 @@
     }
     
     </script>
+    <script src="shaders/noise.js">
+    </script>
+
     <script>
         // MatCap-style image rendered on a sphere
 
@@ -152,65 +147,9 @@
         var nft_id = params.get("nft_id");
         var mesh;
         var gifCanvas;
-        // document.getElementById("share-btn").addEventListener("click",(e)=>{window.open("https://viewer.cardaworlds.io/?nft_id="+nft_id, "_blank");})
 
 
-        var capturer = new CCapture({ format: 'gif', workersPath: 'screen-capture/', framerate: 30, quality: 200, name: "CardaWorld", workers: 8 });
-        // var capturer = new CCapture({ format: "webm",framerate: 20, quality: 20});
-
-
-        /* fetch("https://cardaworlds-api.herokuapp.com/CheckAsset/" + nft_id, {
-            //fetch("http://127.0.0.1:5000/CheckAsset/" + nft_id, {
-            "dataType": 'jsonp',
-            "method": "GET"
-        })
-            .then(response => response.json())
-            .then(response => {
-                console.log(response);
-                var metadata = response.onchain_metadata;
-                var image_ipfs = metadata.image.replace("ipfs://", "")
-                var imageURL = "https://gw2.easy-ipfs.com/ipfs/" + image_ipfs
-                var nft_info = {
-                    "asset_id": response.asset,
-                    "asset_name": response.name,
-                    "description": metadata.description,
-                    "name": metadata.name,
-                    "planetName": metadata.planetName,
-                    "galaxyType": metadata.galaxyType,
-                    "rarities": metadata.rarities,
-                    "imageURL": imageURL,
-                    "heightmap": "https://gw2.easy-ipfs.com/ipfs/" + metadata.files[0].src.replace("ipfs://", ""),
-                    "background": "https://gw2.easy-ipfs.com/ipfs/" + metadata.files[1].src.replace("ipfs://", "")
-                }
-
-                init(nft_info.imageURL, nft_info.heightmap, nft_info.background, nft_info.name, nft_info.planetName, nft_info.rarities, nft_info.galaxyType);
-                animate();
-
-            })
-            .catch(err => {
-                console.log(err);
-            });
- */
-
-        function saveCapture() {
-            capturer.start();
-            let button = document.getElementById("saveGIF");
-            button.disabled = true;
-            button.innerHTML = "Recording...";
-            setTimeout(function () {
-                console.log("stopped");
-                button.innerHTML = "Saving...";
-                button.style.color = "yellow";
-                capturer.stop();
-                capturer.save();
-
-            }, 8000);
-
-        }
-        document.getElementById("saveGIF").addEventListener('click', () => { saveCapture() });
-
-
-        init("volcanic2158.png", "volcanic2158.png", "https://infura-ipfs.io/ipfs/QmNrKdgPFB1XSfkrVJvscBpRKXhkNWARn1SR5Wx8gNBdnD", "CardaWorld", "BitBoy Prime", "Mushroom forest, Gold, Volcanoes, Cryptonic atmosphere", "purple");
+        init("../volcanic2158.png", "../volcanic2158.png", "https://infura-ipfs.io/ipfs/QmNrKdgPFB1XSfkrVJvscBpRKXhkNWARn1SR5Wx8gNBdnD", "CardaWorld", "BitBoy Prime", "Mushroom forest, Gold, Volcanoes, Cryptonic atmosphere", "purple");
         animate();
         function init(imageURL, heightmap, background, name, planetName, rarities, galaxyType) {
 
@@ -346,19 +285,7 @@
     spacesphere.material.map.wrapT = THREE.RepeatWrapping;
     spacesphere.material.map.repeat.set(5, 3);
 
-    //scene.add(spacesphere);
-
-    const cubeLoader = new THREE.CubeTextureLoader();
-    const spaceTexture = cubeLoader.load([
-        './resources/space-posx.jpg',
-        './resources/space-negx.jpg',
-        './resources/space-posy.jpg',
-        './resources/space-negy.jpg',
-        './resources/space-posz.jpg',
-        './resources/space-negz.jpg',
-    ]);
-    spaceTexture.encoding = THREE.sRGBEncoding;
-    scene.background = spaceTexture;
+    scene.add(spacesphere);
 
     
     var texture =loader.load(imageURL);
@@ -370,15 +297,12 @@
     heightmapTexture.minFilter =  THREE.LinearFilter;
     
     THREE.ImageUtils.crossOrigin = 'anonymous';
-    var material = new THREE.MeshPhongMaterial({
-        map: texture,
-        //bumpMap: loader.load(heightmapTexture),
-        bumpScale: 8,
-        displacementMap: heightmapTexture,
-        displacementScale: 3,
-        shininess: 2
-
-
+    var material = new THREE.ShaderMaterial({
+        uniforms: {},
+            fragmentShader: noiseShader,
+            side: THREE.BackSide,
+            blending: THREE.AdditiveBlending,
+            transparent: true
     });
 
     var sphere = new THREE.SphereBufferGeometry(80, 2000, 720)
@@ -386,12 +310,6 @@
 
 
     mesh = new THREE.Mesh(sphere, material)
-    mesh.material.map.wrapS = THREE.RepeatWrapping;
-    mesh.material.map.wrapT = THREE.RepeatWrapping;
-    mesh.material.map.repeat.set(1, 1);
-    
-    mesh.material.flatShading = false;
-    mesh.geometry.computeVertexNormals(true);
 
     scene.add(mesh);
 
@@ -424,8 +342,9 @@
             blending: THREE.AdditiveBlending,
             transparent: true
         });
+        
 
-    var ballGeometry = new THREE.SphereBufferGeometry(glowRadius, 1080, 720);
+    var ballGeometry = new THREE.SphereGeometry(glowRadius, 1080, 720);
     var ball = new THREE.Mesh(ballGeometry, customMaterial);
 
     scene.add(ball);
@@ -452,7 +371,7 @@
 
         function render() {
 
-            capturer.capture(gifCanvas);
+          //  capturer.capture(gifCanvas);
             renderer.render(scene, camera);
             renderer.setPixelRatio( window.devicePixelRatio );
 
