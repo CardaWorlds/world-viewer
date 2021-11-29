@@ -15,13 +15,12 @@
     <meta property="og:url" content="https:/cardaworlds.io">
     <meta property="og:description" content="CardaWorlds CNFT viewer">
 
-    <script src="https://threejs.org/build/three.min.js"></script>
-    <script src="https://threejs.org/examples/js/controls/OrbitControls.js"></script>
+    <script src="./three.min.js"></script>
+    <script src="./OrbitControl.min.js"></script>
+    <script src="classes/planet.js"></script>
 
 
     <!-- Include gifjs if you want to export GIF -->
-
-
 
 
 </head>
@@ -65,7 +64,7 @@
             const near = 0.1;
             const far = 1000;
             const camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
-            camera.position.set(50, 10, 10);
+            camera.position.set(190, 10, 10);
             camera.up.set(0, 0, 1)
             camera.lookAt(0, 0, 0);
 
@@ -120,7 +119,7 @@
 
             const sunMaterial = new THREE.MeshPhongMaterial({ emissive: 0xFFFF00 });
             const sunMesh = new THREE.Mesh(sphereGeometry, sunMaterial);
-            sunMesh.scale.set(7, 7, 7);
+            sunMesh.scale.set(45, 45, 45);
             solarSystem.add(sunMesh);
             sunMesh.name = "sun";
             objects.push(sunMesh);
@@ -147,124 +146,30 @@
             ball.scale.set(7.5, 7.5, 7.5)
             scene.add(ball);
 
-            //--------------------------------------------
-            const gaseousOrbit = new THREE.Object3D();
-            gaseousOrbit.position.x = 600;
-            solarSystem.add(gaseousOrbit);
-            objects.push(gaseousOrbit);
-
+            //----------------
             const loader = new THREE.TextureLoader();
-            const gaseousMaterial = new THREE.MeshPhongMaterial({
-                map: loader.load("gaseousSmooth.png"),
-                //bumpMap: loader.load("gaseousSmooth.png"),
-                bumpScale: 0.1,
-                //displacementMap: loader.load("heightmap_1650.png"),
-                displacementScale: 0.07,
-                shininess: 0
+            /* const loader = new THREE.TextureLoader();
+            
+            var planetMesh = createPlanet(loader, "volcanic2000.png","volcanic2000.png","Terrestrial","Balanced", 1.5);
+            let planetOrbit = new THREE.Object3D();
+            //var planetMesh = planet.planetMesh;
+            console.log(planetOrbit)
+            planetOrbit.position.x = 90;
+            planetOrbit.add(planetMesh);
+            planetOrbit.rotation.x = (Math.PI / 2)
 
-            });
-            var sphere = new THREE.SphereGeometry(5, 1080, 1080)
+            objects.push(planetMesh)
+            solarSystem.add(planetOrbit);
+            objects.push(planetOrbit);
+            
+            console.log(objects) */
 
-            gaseousMesh = new THREE.Mesh(sphere, gaseousMaterial)
-            gaseousMesh.scale.set(3, 3, 3)
-            // gaseousMesh.rotation.set(Math.PI/2,0, 0); // Set initial rotation
-
-
-            //const earthMesh = new THREE.Mesh(sphereGeometry, earthMaterial);
-            gaseousOrbit.add(gaseousMesh);
-            gaseousOrbit.rotation.x = (Math.PI / 2)
-            objects.push(gaseousMesh);
-            //---------------------------------------------------------------
-
-            //--------------------------------------------
-            const earthOrbit = new THREE.Object3D();
-            earthOrbit.position.x = 19;
-            solarSystem.add(earthOrbit);
-            objects.push(earthOrbit);
-
-            //const loader = new THREE.TextureLoader();
-            const earthMaterial = new THREE.MeshPhongMaterial({
-                map: loader.load("CardaWorld1650.png"),
-                bumpMap: loader.load("heightmap_1650.png"),
-                bumpScale: 0.1,
-                displacementMap: loader.load("heightmap_1650.png"),
-                displacementScale: 0.07,
-                shininess: 15
-
-            });
-            var sphere = new THREE.SphereGeometry(radius, 1080, 1080)
-
-            earthMesh = new THREE.Mesh(sphere, earthMaterial)
-
-            //const earthMesh = new THREE.Mesh(sphereGeometry, earthMaterial);
-            earthOrbit.add(earthMesh);
-            earthOrbit.rotation.x = (Math.PI / 2)
-            objects.push(earthMesh);
-            //---------------------------------------------------------------
-            //--------------------------------------------
-            const earthOrbit2 = new THREE.Object3D();
-            earthOrbit2.position.x = 22;
-            solarSystem.add(earthOrbit2);
-            objects.push(earthOrbit2);
-
-            //const loader = new THREE.TextureLoader();
-            const earthMaterial2 = new THREE.MeshPhongMaterial({
-                map: loader.load("CardaWorld1650.png"),
-                bumpMap: loader.load("heightmap_1650.png"),
-                bumpScale: 0.1,
-                displacementMap: loader.load("heightmap_1650.png"),
-                displacementScale: 0.07,
-                shininess: 15
-
-            });
-            var sphere = new THREE.SphereGeometry(radius, 1080, 1080)
-
-            earthMesh2 = new THREE.Mesh(sphere, earthMaterial)
-            earthMesh2.scale.set(1.2, 1.2, 1.2)
-
-            //const earthMesh = new THREE.Mesh(sphereGeometry, earthMaterial);
-            earthOrbit2.add(earthMesh2);
-            earthOrbit2.rotation.x = (Math.PI / 2)
-            objects.push(earthMesh2);
-            //---------------------------------------------------------------
-            //--------------------------------------------
-            const volcanicOrbit = new THREE.Object3D();
-            volcanicOrbit.position.x = 12;
-            solarSystem.add(volcanicOrbit);
-            objects.push(volcanicOrbit);
-
-            const volcanicMaterial = new THREE.MeshPhongMaterial({
-                map: loader.load("volcanic2000.png"),
-                // bumpMap: loader.load(heightmap),
-                bumpScale: 1.2,
-                displacementMap: loader.load("volcanic2000.png"),
-                displacementScale: 0.05,
-                shininess: 15
-
-            });
-            var volcanicSphere = new THREE.SphereGeometry(radius, 1080, 1080)
-
-            volcanicMesh = new THREE.Mesh(volcanicSphere, volcanicMaterial)
-            volcanicMesh.scale.set(0.6, 0.6, 0.6)
-
-            //const earthMesh = new THREE.Mesh(sphereGeometry, earthMaterial);
-            volcanicOrbit.add(volcanicMesh);
-            volcanicOrbit.rotation.x = (Math.PI / 2)
-            objects.push(volcanicMesh);
-            //---------------------------------------------------------------
-
-            const moonOrbit = new THREE.Object3D();
-            moonOrbit.position.x = 2;
-            earthOrbit.add(moonOrbit);
-
-            const moonMaterial = new THREE.MeshPhongMaterial({ color: 0x888888, emissive: 0x222222 });
-            const moonMesh = new THREE.Mesh(sphereGeometry, moonMaterial);
-            moonMesh.scale.set(.1, .1, .1);
-            moonOrbit.add(moonMesh);
-            objects.push(moonMesh);
+            addPlanet("CardaWorld1650.png", "heightmap_1650.png", "Terrestrial", "Balanced", 1.8, 85);
+            //-------------
 
 
-            console.log(objects[2]);
+
+            //console.log(objects[2]);
             // add an AxesHelper to each node
             /* objects.forEach((node) => {
                 const axes = new THREE.AxesHelper();
@@ -296,31 +201,61 @@
                     var dist = Math.sqrt(obj.position.x * obj.position.x + obj.position.y * obj.position.y);
                     if (obj.name != "solarSystem" && obj.name != "sun") {
                         dividend = obj.type == 'Object3D' ? 8 : obj.position.x;
-
-
                         // obj.rotation.y = time / 1;
-                        if (dist>0){
-                             obj.rotation.y = Date.now() * -0.005 / dist;
+                        if (dist > 0) {
+                            obj.rotation.y = Date.now() * -0.005 / dist;
                         }
+                    }
 
+                    if (obj.name != "solarSystem" && obj.name != "sun" && obj.type == 'Object3D') {
+                        var dist = Math.sqrt(obj.position.x * obj.position.x + obj.position.y * obj.position.y);
+                        obj.position.x = dist * Math.sin(time * 10 / (dist * dist));
+                        obj.position.y = dist * Math.cos(time * 10 / (dist * dist));
+                    }
+                });
+
+                renderer.render(scene, camera);
+
+                requestAnimationFrame(render);
             }
 
-            if (obj.name != "solarSystem" && obj.name != "sun" && obj.type == 'Object3D') {
-                var dist = Math.sqrt(obj.position.x * obj.position.x + obj.position.y * obj.position.y);
-                obj.position.x = dist * Math.sin(time * 10 / (dist * dist));
-                obj.position.y = dist * Math.cos(time * 10 / (dist * dist));
+            requestAnimationFrame(render);
+
+
+            function addPlanet(map, heightmap, planetType, atmosphere, planetSize, distance) {
+                const planetOrbit = new THREE.Object3D();
+                planetOrbit.position.x = distance;
+                solarSystem.add(planetOrbit);
+                objects.push(planetOrbit);
+
+                //const loader = new THREE.TextureLoader();
+                const planetMaterial = new THREE.MeshPhongMaterial({
+                    map: loader.load(map),
+                    bumpMap: loader.load(heightmap),
+                    bumpScale: 0.1,
+                    displacementMap: loader.load(heightmap),
+                    displacementScale: 0.07,
+                    shininess: 15
+
+                });
+                var sphere = new THREE.SphereGeometry(radius, 1080, 1080)
+
+                planetMesh = new THREE.Mesh(sphere, planetMaterial);
+                planetMesh.scale.set(planetSize, planetSize, planetSize);
+
+                //const planetMesh = new THREE.Mesh(sphereGeometry, planetMaterial);
+                planetOrbit.add(planetMesh);
+                planetOrbit.rotation.x = (Math.PI / 2)
+                objects.push(planetMesh);
             }
-        });
 
-        renderer.render(scene, camera);
 
-        requestAnimationFrame(render);
-            }
 
-        requestAnimationFrame(render);
+
         }
 
         main();
+
 
     </script>
 </body>

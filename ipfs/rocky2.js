@@ -7,42 +7,19 @@ var nft_id = params.get("nft_id");
 var mesh;
 const satellites = [];
 
-var seedDate = new Date('2021-10-15');
+var seedDate = new Date('2021-10-13T03:04:05.678Z');
 
-//updating document metadata
-function setMeta(metaName, content) {
-    const metas = document.getElementsByTagName('meta');
-    for (let i = 0; i < metas.length; i++) {
-        if (metas[i].getAttribute('name') === metaName) {
-            metas[i].setAttribute('content', content);
-        }
+init("CardaWorld0.png", "heightmap_0.png", "CardaWorld0", "Ice world, Gold", "Terrestrial", 1.2, "small moon, medium moon, big moon");
 
-        return '';
-    }
-}
-
-init("gaseous3.png", "gaseous3.png", "CardaWorld0", "Gas giant", 3, "Arcane", "small moon, medium moon, large moon", "2021-10-13", "Legendary");
-
-function init(imageURL, heightmap, name, planetType, planetSize, atmosphere, moons, seedDateString, rarity) {
-    //------DOCUMENT METADATA-------//
-    document.title = name;
-    setMeta("description", "Type: " + planetType + ", Rarity: " + rarity);
-    var link = document.createElement('meta');
-    link.setAttribute('property', 'og:url');
-    link.content = document.location;
-    document.getElementsByTagName('head')[0].appendChild(link);
-
-    var previewImage = document.createElement('meta');
-    previewImage.setAttribute('property', 'og:image');
-    previewImage.content = window.location.href + imageURL;
-    document.getElementsByTagName('head')[0].appendChild(previewImage);
-    //-------------------------------------
-
-    var seedDate = new Date(seedDateString);
-
+animate();
+function init(imageURL, heightmap, name, rarities, planetType, planetSize, moons) {
     var planetRadius = 80;
 
+    raritiesArray = rarities.split(", ");
+    console.log(raritiesArray);
+
     moonsArray = moons.split(", ");
+    console.log(moonsArray);
 
     renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true }); //alpha: true is used to allow backgrounds
     renderer.setSize(window.innerWidth, window.innerHeight);
@@ -59,26 +36,22 @@ function init(imageURL, heightmap, name, planetType, planetSize, atmosphere, moo
     camera.position.set(0, 0, 200);
 
     controls = new THREE.OrbitControls(camera, renderer.domElement);
-    controls.minDistance = 140;
+    controls.minDistance = 120;
     controls.maxDistance = 280;
     controls.maxPolarAngle = 1.8;
     controls.minPolarAngle = 1.2;
     controls.enablePan = false;
 
 
-    var light = new THREE.PointLight(0x404040, 3);
+    var light = new THREE.PointLight(0x404040, 3.2);
     light.castShadow = true;
     //light.position.set(0, 0, 380);
-    light.position.set(0, 20, 270);
-    light.shadow.radius = 9;
+    light.position.set(0, 20, 210);
+    light.shadow.radius = 12;
     light.shadow.mapSize.width = 2048;
     light.shadow.mapSize.height = 2048;
     light.shadow.bias = 0.0001;
-
-    if(planetType=="Gas giant"){
-        light.position.set(0, 20, 420);
-        light.intensity=1;
-    }
+    light.shadowDarkness = 0.1;
 
     const d = 100;
 
@@ -111,18 +84,19 @@ function init(imageURL, heightmap, name, planetType, planetSize, atmosphere, moo
     // ----- test moon -------
     if (moonsArray != []) {
         var moonGeometry = new THREE.SphereBufferGeometry(1, 200, 200);
-        var i = 0;
         for (let moon of moonsArray) {
-            var size = moon == "small moon" ? 0.08 * planetRadius / planetSize : (moon == "medium moon" ? 0.16 * planetRadius / planetSize : 0.27 * planetRadius / planetSize);
-            var bufferDistance = planetSize + 200; //space between planet and first moon
-            var distance = moon == "small moon" ? bufferDistance : (moon == "medium moon" ? bufferDistance + 5 * size : bufferDistance + 8 * size); //distance from center of planet to moon center
+            console.log(moon)
+            var size = moon == "small moon" ? 0.09 * planetRadius / planetSize : (moon == "medium moon" ? 0.15 * planetRadius / planetSize : 0.2 * planetRadius / planetSize);
+            console.log(size)
+            var bufferDistance = planetSize + 100; //space between planet and first moon
+            var distance = moon == "small moon" ? bufferDistance : (moon == "medium moon" ? bufferDistance + 3 * size : bufferDistance + 5 * size); //distance from center of planet to moon center
 
             const moonOrbit = new THREE.Object3D();
             moonOrbit.position.x = distance;
             moonOrbit.position.y = 5;
             satellites.push(moonOrbit);
 
-            const moonMaterial = new THREE.MeshPhongMaterial({ map: loader.load("resources/moon" + i + ".png"), color: 0x666666, emissive: 0x444444, bumpMap: loader.load("resources/moon" + i + ".png"), bumpScale: 1.2, displacementMap: loader.load("resources/moon" + i + ".png"), displacementScale: 0.1, reflectivity: 1, shininess: 0 });
+            const moonMaterial = new THREE.MeshPhongMaterial({ color: 0x777777, emissive: 0x111111, bumpMap: loader.load('moon1.png'), bumpScale: 1.2, reflectivity: 0, roughness: 1, shininess: 0 });
 
             const moonMesh = new THREE.Mesh(moonGeometry, moonMaterial);
 
@@ -134,7 +108,6 @@ function init(imageURL, heightmap, name, planetType, planetSize, atmosphere, moo
             moonOrbit.add(moonMesh);
             //  satellites.push(moonMesh);
             scene.add(moonOrbit);
-            i++;
 
         }
     }
@@ -149,55 +122,58 @@ function init(imageURL, heightmap, name, planetType, planetSize, atmosphere, moo
     heightmapTexture.minFilter = THREE.LinearFilter;
 
     var bumpScale = planetType == "Terrestrial" ? 1.8 : 0;
-    var displacementScale = planetType == "Terrestrial" ? 8 : (planetType == "Gas giant" ? 0 : 2);
+    var displacementScale = planetType == "Terrestrial" ? 8 : 2;
 
     THREE.ImageUtils.crossOrigin = 'anonymous';
-    var material = new THREE.MeshPhongMaterial({
+
+    var texture = loader.load('rocky0.png')
+/*     var material = new THREE.MeshPhongMaterial({
+        color: "#663926",
         map: texture,
-        bumpMap: loader.load(heightmapTexture),
-        bumpScale: bumpScale,
-        displacementMap: heightmapTexture,
-        displacementScale: displacementScale,
-        shininess: 0,
-        reflectivity:0
-    });
-   
+        emissive: 0x000000,
+        bumpMap: loader.load('rocky0.png'),
+        displacementMap: loader.load('rocky0.png'),
+        bumpScale: 20, displacementScale: 8,
+        reflectivity: 0,
+        shininess: 0
+    }); */
+
+
     var sphere = new THREE.SphereBufferGeometry(planetRadius, 360, 360)
 
+    material = new THREE.ShaderMaterial( {
+        uniforms: {
+            tExplosion: {
+              type: "t",
+              value: THREE.ImageUtils.loadTexture( 'rocky0.png' )
+            },
+            time: { // float initialized to 0
+              type: "f",
+              value: 0.0
+            }
+          },
+        vertexShader: document.getElementById( 'vertexShader2' ).textContent,
+        fragmentShader: document.getElementById( 'fragmentShader2' ).textContent
+      } );
 
-    mesh = new THREE.Mesh(sphere, material);
+    // create a sphere and assign the material
+    mesh = new THREE.Mesh(
+        new THREE.IcosahedronGeometry(planetRadius, 8),
+        material
+    );
 
-    // mesh.material.flatShading = false;
-    //mesh.geometry.computeVertexNormals(true);
-    mesh.castShadow = true;
-    mesh.receiveShadow = true;
     scene.add(mesh);
 
     // create custom material from the shader code above, used to add glowing atmosphere
     //   that is within specially labeled script tags
 
-    if (atmosphere == "Helium-Hydrogen") {
-        var atmosphereColors = "( 0.74, 0.65, 0.3, 1.1 )";
-        var glowRadius = 100;
+    if (raritiesArray.includes("Cryptonic atmosphere")) {
+        var atmosphereColors = "( 0.24, 0.143, 0.8, 1.4 )";
+        var glowRadius = 105;
 
-    } else if (atmosphere == "Radioactive") {
-        var atmosphereColors = "( 0.94, 0.25, 0.2, 1.1 )";
-        var glowRadius = 101;
-
-    }
-    else if (atmosphere == "Arcane") {
-        var atmosphereColors = "( 0.84, 0.35, 0.8, 1.1 )";
-        var glowRadius = 102;
-
-    }
-    else if (atmosphere == "Poisonous") {
-        var atmosphereColors = "( 0.44, 0.85, 0.2, 1.1 )";
-        var glowRadius = 102;
-
-    }
-    else {
+    } else {
         var atmosphereColors = "(0.5,0.6,1,1)";
-        var glowRadius = 104;
+        var glowRadius = 98;
 
     }
 
@@ -223,33 +199,28 @@ function init(imageURL, heightmap, name, planetType, planetSize, atmosphere, moo
 
     scene.add(ball);
 
-    runAnimation(seedDate);
-
-
 }
 
-function runAnimation(seedDate) {
-    animate();
-    function animate() {
-        //time =360;
-        time = (Date.now() - seedDate.getTime()) / 5000
-        satellites.forEach((obj) => {
-            if (time) {
-                var dist = Math.sqrt(obj.position.x * obj.position.x + obj.position.z * obj.position.z);
-                obj.position.x = dist * Math.sin(time * 0.5 / Math.sqrt(dist));
-                obj.position.z = dist * Math.cos(time * 0.5 / Math.sqrt(dist));
-            }
+function animate(time) {
 
-        });
-        requestAnimationFrame(animate);
-        //controls.update(); // not required here
-        mesh.rotation.x = 0.000001;
-        mesh.rotation.y = time;
+    //time *=0.001;
+    time = (Date.now() - seedDate.getTime()) / 2000
+    satellites.forEach((obj) => {
+        if (time) {
+            var dist = Math.sqrt(obj.position.x * obj.position.x + obj.position.z * obj.position.z);
+            obj.position.x = dist * Math.sin(time * 0.5 / Math.sqrt(dist));
+            obj.position.z = dist * Math.cos(time * 0.5 / Math.sqrt(dist));
+        }
 
-        renderer.render(scene, camera);
+    });
+    requestAnimationFrame(animate);
+    //controls.update(); // not required here
+    mesh.rotation.x = 0.000001;
+    mesh.rotation.y = time;
 
-        render();
-    }
+    renderer.render(scene, camera);
+
+    render();
 
 }
 

@@ -109,8 +109,9 @@
     #NFTtitle {
         margin: 1px;
     }
+
     #NFTlink:hover {
-        color:blue !important;
+        color: blue !important;
     }
 
     #saveGIF {
@@ -132,7 +133,7 @@
     <canvas id="gifCanvas" style="display:none;">
     </canvas>
     <!-- ---------------- Custom Shader Code ------------------------ -->
-   <script id="vertexShader" type="x-shader/x-vertex">
+    <script id="vertexShader" type="x-shader/x-vertex">
     varying vec3 vNormal;
     void main() 
     {
@@ -210,218 +211,222 @@
         document.getElementById("saveGIF").addEventListener('click', () => { saveCapture() });
 
 
-        init("volcanic2158.png", "volcanic2158.png", "https://infura-ipfs.io/ipfs/QmNrKdgPFB1XSfkrVJvscBpRKXhkNWARn1SR5Wx8gNBdnD", "CardaWorld", "BitBoy Prime", "Mushroom forest, Gold, Volcanoes, Cryptonic atmosphere", "purple");
+        init("manu1b.jpg", "manu1a.jpg", "https://infura-ipfs.io/ipfs/QmNrKdgPFB1XSfkrVJvscBpRKXhkNWARn1SR5Wx8gNBdnD", "CardaWorld", "BitBoy Prime", "Mushroom forest, Gold, Volcanoes, Cryptonic atmosphere", "purple");
         animate();
         function init(imageURL, heightmap, background, name, planetName, rarities, galaxyType) {
 
 
             console.log(heightmap)
-    image = document.createElement('img');
-    height_image = document.createElement('img');
+            image = document.createElement('img');
+            height_image = document.createElement('img');
 
 
 
-    var nftInfo = document.getElementById("NFTinfo");
-    var nft_title = document.getElementById("NFTtitle");
+            var nftInfo = document.getElementById("NFTinfo");
+            var nft_title = document.getElementById("NFTtitle");
 
-    var background_color = document.createElement('p');
-    background_color.innerHTML = "<b>Galaxy type: </b>" + galaxyType;
-    nftInfo.appendChild(background_color);
+            var background_color = document.createElement('p');
+            background_color.innerHTML = "<b>Galaxy type: </b>" + galaxyType;
+            nftInfo.appendChild(background_color);
 
-    var nft_planet_name = document.createElement('p');
-    nft_planet_name.innerHTML = "<b>Name: </b>" + planetName;
-
-
-    var nft_link = document.getElementById("NFTlink");
-    nft_link.innerHTML = name;
-    //nftInfo.appendChild(nft_title);
-    nftInfo.appendChild(nft_planet_name)
-
-    nft_link.setAttribute("href", imageURL);
-    nft_link.setAttribute("target", "_blank");
-
-    rarities_html = '<b>Rarities: </b><ul><li>' + rarities.replace(/,/gi, '</li><li>') + '</li></ul>';
-    document.getElementById("raritiesDiv").innerHTML = rarities_html;
-    raritiesArray =rarities.split(", ");
-    console.log(raritiesArray);
+            var nft_planet_name = document.createElement('p');
+            nft_planet_name.innerHTML = "<b>Name: </b>" + planetName;
 
 
+            var nft_link = document.getElementById("NFTlink");
+            nft_link.innerHTML = name;
+            //nftInfo.appendChild(nft_title);
+            nftInfo.appendChild(nft_planet_name)
 
-    image.crossOrigin = "anonymous";
-    image.src = imageURL;
-    image.width = 720;
-    image.height = 1080;
-    image.style.maxHeight = "30%";
-    image.style.maxWeight = "30%";
+            nft_link.setAttribute("href", imageURL);
+            nft_link.setAttribute("target", "_blank");
 
-    height_image.crossOrigin = "anonymous";
-    height_image.src = heightmap;
-    height_image.width = 720;
-    height_image.height = 1080;
-
-    //document.body.style.backgroundImage = "url(" + background + ")";
-
-    info = document.createElement('div');
-    info.style.position = 'absolute';
-    info.style.top = '30px';
-    info.style.width = '100%';
-    info.style.textAlign = 'center';
-    info.style.color = '#fff';
-    info.style.fontWeight = 'bold';
-    info.style.backgroundColor = 'transparent';
-    info.style.zIndex = '1';
-    info.style.fontFamily = 'Monospace';
-    //info.innerHTML = 'Drag mouse to rotate camera; scroll to zoom';
-    document.body.appendChild(info);
-
-    renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true }); //alpha: true is used to allow backgrounds
-    renderer.setSize(window.innerWidth, window.innerHeight);
-
-    gifCanvas = document.getElementById("gifCanvas")
-    gifRenderer = new THREE.WebGLRenderer({ alpha: true, canvas: gifCanvas, antialias: true }); //alpha: true is used to allow backgrounds
-    gifRenderer.setSize(450, 300);
-    gifCamera = new THREE.PerspectiveCamera(40, 450 / 300, 1, 1000);
-    gifCamera.position.set(0, 0, 248);
-
-
-    document.body.appendChild(renderer.domElement);
+            rarities_html = '<b>Rarities: </b><ul><li>' + rarities.replace(/,/gi, '</li><li>') + '</li></ul>';
+            document.getElementById("raritiesDiv").innerHTML = rarities_html;
+            raritiesArray = rarities.split(", ");
+            console.log(raritiesArray);
 
 
 
-    scene = new THREE.Scene();
+            image.crossOrigin = "anonymous";
+            image.src = imageURL;
+            image.width = 720;
+            image.height = 1080;
+            image.style.maxHeight = "30%";
+            image.style.maxWeight = "30%";
 
-    camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 1, 1000);
-    camera.position.set(0, 0, 200);
+            height_image.crossOrigin = "anonymous";
+            height_image.src = heightmap;
+            height_image.width = 720;
+            height_image.height = 1080;
 
-    controls = new THREE.OrbitControls(camera, renderer.domElement);
-    controls.enableDamping = true;
-    controls.dampingFactor = 0.05;
-    controls.minDistance = 110;
-    controls.maxDistance = 200;
-    controls.maxPolarAngle =1.8;
-    controls.minPolarAngle =1.2;
-    controls.enablePan = false;
+            //document.body.style.backgroundImage = "url(" + background + ")";
 
+            info = document.createElement('div');
+            info.style.position = 'absolute';
+            info.style.top = '30px';
+            info.style.width = '100%';
+            info.style.textAlign = 'center';
+            info.style.color = '#fff';
+            info.style.fontWeight = 'bold';
+            info.style.backgroundColor = 'transparent';
+            info.style.zIndex = '1';
+            info.style.fontFamily = 'Monospace';
+            //info.innerHTML = 'Drag mouse to rotate camera; scroll to zoom';
+            document.body.appendChild(info);
 
-    document.body.appendChild(image);
+            renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true }); //alpha: true is used to allow backgrounds
+            renderer.setSize(window.innerWidth, window.innerHeight);
 
-    var texture = new THREE.Texture(image)
-
-    image.onload = function () {
-        texture.needsUpdate = true;
-    };
-
-    var uniforms = {
-        "tex": { value: texture }
-    };
-
-    var light = new THREE.DirectionalLight(0x404040, 4);
-    light.position.set(50, 50, 40);
-   light.shadow.bias=-1;
-
-    scene.add(light);
-    
-    var ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
-    scene.add(ambientLight);
-
-    const loader = new THREE.TextureLoader();
-    /* loader.load(background, function (texture) {
-        scene.background = texture;
-    }); */
-
-    const cubeLoader = new THREE.CubeTextureLoader();
-    const spaceTexture = cubeLoader.load([
-        './resources/'+galaxyType+'-space-posx.jpg',
-        './resources/'+galaxyType+'-space-negx.jpg',
-        './resources/'+galaxyType+'-space-posy.jpg',
-        './resources/'+galaxyType+'-space-negy.jpg',
-        './resources/'+galaxyType+'-space-posz.jpg',
-        './resources/'+galaxyType+'-space-negz.jpg',
-    ]);
-    spaceTexture.encoding = THREE.sRGBEncoding;
-    scene.background = spaceTexture;
+            gifCanvas = document.getElementById("gifCanvas")
+            gifRenderer = new THREE.WebGLRenderer({ alpha: true, canvas: gifCanvas, antialias: true }); //alpha: true is used to allow backgrounds
+            gifRenderer.setSize(450, 300);
+            gifCamera = new THREE.PerspectiveCamera(40, 450 / 300, 1, 1000);
+            gifCamera.position.set(0, 0, 248);
 
 
-    THREE.ImageUtils.crossOrigin = 'anonymous';
-    var material = new THREE.MeshPhongMaterial({
-        map: loader.load(imageURL),
-        bumpMap: loader.load(heightmap),
-        bumpScale: 1.8,
-        displacementMap: loader.load(heightmap),
-        displacementScale: 8,
-        shininess: 15
-
-    });
-
-    
-    var texture =loader.load(imageURL);
-    texture.anisotropy = renderer.capabilities.getMaxAnisotropy();
-    texture.minFilter =  THREE.LinearMipmapLinearFilter;
-
-    var heightmapTexture =loader.load(heightmap);
-    //heightmapTexture.anisotropy = renderer.capabilities.getMaxAnisotropy();
-    heightmapTexture.minFilter =  THREE.LinearFilter;
-    
-    THREE.ImageUtils.crossOrigin = 'anonymous';
-    var material = new THREE.MeshPhongMaterial({
-        map: texture,
-        //bumpMap: loader.load(heightmapTexture),
-        bumpScale: 8,
-        displacementMap: heightmapTexture,
-        displacementScale: 3,
-        shininess: 2
+            document.body.appendChild(renderer.domElement);
 
 
-    });
 
-    var sphere = new THREE.SphereBufferGeometry(80, 2000, 720)
-    
+            scene = new THREE.Scene();
+
+            camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 1, 1000);
+            camera.position.set(0, 0, 200);
+
+            controls = new THREE.OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true;
+            controls.dampingFactor = 0.05;
+            controls.minDistance = 110;
+            controls.maxDistance = 200;
+            controls.maxPolarAngle = 1.8;
+            controls.minPolarAngle = 1.2;
+            controls.enablePan = false;
 
 
-    mesh = new THREE.Mesh(sphere, material)
-    mesh.material.map.wrapS = THREE.RepeatWrapping;
-    mesh.material.map.wrapT = THREE.RepeatWrapping;
-    mesh.material.map.repeat.set(1, 1);
-    
-    mesh.material.flatShading = false;
-    mesh.geometry.computeVertexNormals(true);
+            document.body.appendChild(image);
 
-    scene.add(mesh);
+            var texture = new THREE.Texture(image)
 
-    // create custom material from the shader code above, used to add glowing atmosphere
-    //   that is within specially labeled script tags
+            image.onload = function () {
+                texture.needsUpdate = true;
+            };
 
-    if(raritiesArray.includes("Cryptonic atmosphere")){
-        var atmosphereColors="( 0.74, 0.143, 0.1, 1.4 )";
-        var glowRadius=105;
+            var uniforms = {
+                "tex": { value: texture }
+            };
 
-    }else{
-        var atmosphereColors="(0.5,0.6,1,1)";
-        var glowRadius=98;
+            var light = new THREE.DirectionalLight(0x404040, 4);
+            light.position.set(50, 50, 40);
+            light.shadow.bias = -1;
 
-    }
+            scene.add(light);
 
-    var fragmentShader = `varying vec3 vNormal;
+            var ambientLight = new THREE.AmbientLight(0xffffff, 0.9);
+            scene.add(ambientLight);
+
+            const loader = new THREE.TextureLoader();
+            /* loader.load(background, function (texture) {
+                scene.background = texture;
+            }); */
+
+            const cubeLoader = new THREE.CubeTextureLoader();
+            const spaceTexture = cubeLoader.load([
+                './resources/' + galaxyType + '-space-posx.jpg',
+                './resources/' + galaxyType + '-space-negx.jpg',
+                './resources/' + galaxyType + '-space-posy.jpg',
+                './resources/' + galaxyType + '-space-negy.jpg',
+                './resources/' + galaxyType + '-space-posz.jpg',
+                './resources/' + galaxyType + '-space-negz.jpg',
+            ]);
+            spaceTexture.encoding = THREE.sRGBEncoding;
+            scene.background = spaceTexture;
+
+
+            THREE.ImageUtils.crossOrigin = 'anonymous';
+            /* var material = new THREE.MeshPhongMaterial({
+                map: loader.load(imageURL),
+                bumpMap: loader.load(heightmap),
+                bumpScale: 1.8,
+                displacementMap: loader.load(heightmap),
+                displacementScale: 45,
+                shininess: 15,
+                transparent:true,
+                wireframe:true,
+                alphaMap:loader.load(heightmap)
+
+            }); */
+
+
+            var texture = loader.load(imageURL);
+            texture.anisotropy = renderer.capabilities.getMaxAnisotropy();
+            texture.minFilter = THREE.LinearMipmapLinearFilter;
+
+            var heightmapTexture = loader.load(heightmap);
+            //heightmapTexture.anisotropy = renderer.capabilities.getMaxAnisotropy();
+            heightmapTexture.minFilter = THREE.LinearFilter;
+
+            THREE.ImageUtils.crossOrigin = 'anonymous';
+            var material = new THREE.MeshPhongMaterial({
+                map: texture,
+                //bumpMap: loader.load(heightmapTexture),
+                bumpScale: 0,
+                displacementMap: heightmapTexture,
+                displacementScale: 13,
+                shininess: 50,
+                color:'#71797E'
+
+
+            });
+
+            var sphere = new THREE.SphereBufferGeometry(80, 2000, 720)
+
+
+
+            mesh = new THREE.Mesh(sphere, material)
+            mesh.material.map.wrapS = THREE.RepeatWrapping;
+            mesh.material.map.wrapT = THREE.RepeatWrapping;
+            mesh.material.map.repeat.set(1, 1);
+
+            mesh.material.flatShading = false;
+            mesh.geometry.computeVertexNormals(true);
+
+            scene.add(mesh);
+
+            // create custom material from the shader code above, used to add glowing atmosphere
+            //   that is within specially labeled script tags
+
+            if (raritiesArray.includes("Cryptonic atmosphere")) {
+                var atmosphereColors = "( 0.74, 0.143, 0.1, 1.4 )";
+                var glowRadius = 105;
+
+            } else {
+                var atmosphereColors = "(0.5,0.6,1,1)";
+                var glowRadius = 98;
+
+            }
+
+            var fragmentShader = `varying vec3 vNormal;
     void main() 
     {
         float intensity = pow( 0.7 - dot( vNormal, vec3( 0.0, 0.0, 1.0 ) ), 4.0 ); 
         gl_FragColor = vec4${atmosphereColors} * intensity;
     }`;
 
-    var customMaterial = new THREE.ShaderMaterial(
-        {
-            uniforms: {},
-            vertexShader: document.getElementById('vertexShader').textContent,
-            fragmentShader: fragmentShader,
-            side: THREE.BackSide,
-            blending: THREE.AdditiveBlending,
-            transparent: true
-        });
+            var customMaterial = new THREE.ShaderMaterial(
+                {
+                    uniforms: {},
+                    vertexShader: document.getElementById('vertexShader').textContent,
+                    fragmentShader: fragmentShader,
+                    side: THREE.BackSide,
+                    blending: THREE.AdditiveBlending,
+                    transparent: true
+                });
 
-    var ballGeometry = new THREE.SphereBufferGeometry(glowRadius, 1080, 720);
-    var ball = new THREE.Mesh(ballGeometry, customMaterial);
+            var ballGeometry = new THREE.SphereBufferGeometry(glowRadius, 1080, 720);
+            var ball = new THREE.Mesh(ballGeometry, customMaterial);
 
-    scene.add(ball);
+            //scene.add(ball);
 
 
 
@@ -447,7 +452,7 @@
 
             capturer.capture(gifCanvas);
             renderer.render(scene, camera);
-            renderer.setPixelRatio( window.devicePixelRatio );
+            renderer.setPixelRatio(window.devicePixelRatio);
 
         }
 

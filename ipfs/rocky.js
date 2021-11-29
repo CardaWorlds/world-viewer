@@ -7,26 +7,13 @@ var nft_id = params.get("nft_id");
 var mesh;
 const satellites = [];
 
-var seedDate = new Date('2021-10-15');
+//var seedDate;
 
-//updating document metadata
-function setMeta(metaName, content) {
-    const metas = document.getElementsByTagName('meta');
-    for (let i = 0; i < metas.length; i++) {
-        if (metas[i].getAttribute('name') === metaName) {
-            metas[i].setAttribute('content', content);
-        }
-
-        return '';
-    }
-}
-
-init("gaseous3.png", "gaseous3.png", "CardaWorld0", "Gas giant", 3, "Arcane", "small moon, medium moon, large moon", "2021-10-13", "Legendary");
+init("rocky31.png", "rocky31.png", "CardaWorld0", "Rocky", 5, "Arcane", "small moon, medium moon, large moon", "2021-10-15", "Legendary");
 
 function init(imageURL, heightmap, name, planetType, planetSize, atmosphere, moons, seedDateString, rarity) {
     //------DOCUMENT METADATA-------//
     document.title = name;
-    setMeta("description", "Type: " + planetType + ", Rarity: " + rarity);
     var link = document.createElement('meta');
     link.setAttribute('property', 'og:url');
     link.content = document.location;
@@ -37,10 +24,9 @@ function init(imageURL, heightmap, name, planetType, planetSize, atmosphere, moo
     previewImage.content = window.location.href + imageURL;
     document.getElementsByTagName('head')[0].appendChild(previewImage);
     //-------------------------------------
-
     var seedDate = new Date(seedDateString);
-
     var planetRadius = 80;
+ 
 
     moonsArray = moons.split(", ");
 
@@ -66,19 +52,14 @@ function init(imageURL, heightmap, name, planetType, planetSize, atmosphere, moo
     controls.enablePan = false;
 
 
-    var light = new THREE.PointLight(0x404040, 3);
+    var light = new THREE.PointLight(0x404040, 3.2);
     light.castShadow = true;
     //light.position.set(0, 0, 380);
-    light.position.set(0, 20, 270);
+    light.position.set(0, 20, 265);
     light.shadow.radius = 9;
     light.shadow.mapSize.width = 2048;
     light.shadow.mapSize.height = 2048;
     light.shadow.bias = 0.0001;
-
-    if(planetType=="Gas giant"){
-        light.position.set(0, 20, 420);
-        light.intensity=1;
-    }
 
     const d = 100;
 
@@ -122,7 +103,7 @@ function init(imageURL, heightmap, name, planetType, planetSize, atmosphere, moo
             moonOrbit.position.y = 5;
             satellites.push(moonOrbit);
 
-            const moonMaterial = new THREE.MeshPhongMaterial({ map: loader.load("resources/moon" + i + ".png"), color: 0x666666, emissive: 0x444444, bumpMap: loader.load("resources/moon" + i + ".png"), bumpScale: 1.2, displacementMap: loader.load("resources/moon" + i + ".png"), displacementScale: 0.1, reflectivity: 1, shininess: 0 });
+            const moonMaterial = new THREE.MeshPhongMaterial({ map: loader.load("moons/moon" + i + ".png"), color: 0x444444, emissive: 0x444444, bumpMap: loader.load("moons/moon" + i + ".png"), bumpScale: 1.2, displacementMap: loader.load("moons/moon" + i + ".png"), displacementScale: 0.1, reflectivity: 0, shininess: 0 });
 
             const moonMesh = new THREE.Mesh(moonGeometry, moonMaterial);
 
@@ -149,19 +130,25 @@ function init(imageURL, heightmap, name, planetType, planetSize, atmosphere, moo
     heightmapTexture.minFilter = THREE.LinearFilter;
 
     var bumpScale = planetType == "Terrestrial" ? 1.8 : 0;
-    var displacementScale = planetType == "Terrestrial" ? 8 : (planetType == "Gas giant" ? 0 : 2);
+    var displacementScale = planetType == "Terrestrial" ? 8 : 1.5;
 
     THREE.ImageUtils.crossOrigin = 'anonymous';
+
+    var texture = loader.load(imageURL)
     var material = new THREE.MeshPhongMaterial({
+        color: "#663926",
         map: texture,
-        bumpMap: loader.load(heightmapTexture),
-        bumpScale: bumpScale,
-        displacementMap: heightmapTexture,
-        displacementScale: displacementScale,
-        shininess: 0,
-        reflectivity:0
+        emissive: 0x000000,
+        bumpMap: loader.load(heightmap),
+        displacementMap: loader.load(heightmap),
+        bumpScale: 16, displacementScale: 8,
+        reflectivity: 0,
+        shininess: 0
     });
-   
+
+
+
+
     var sphere = new THREE.SphereBufferGeometry(planetRadius, 360, 360)
 
 
@@ -171,10 +158,13 @@ function init(imageURL, heightmap, name, planetType, planetSize, atmosphere, moo
     //mesh.geometry.computeVertexNormals(true);
     mesh.castShadow = true;
     mesh.receiveShadow = true;
+
+
     scene.add(mesh);
 
     // create custom material from the shader code above, used to add glowing atmosphere
     //   that is within specially labeled script tags
+
 
     if (atmosphere == "Helium-Hydrogen") {
         var atmosphereColors = "( 0.74, 0.65, 0.3, 1.1 )";
@@ -197,7 +187,7 @@ function init(imageURL, heightmap, name, planetType, planetSize, atmosphere, moo
     }
     else {
         var atmosphereColors = "(0.5,0.6,1,1)";
-        var glowRadius = 104;
+        var glowRadius = 102;
 
     }
 
@@ -225,13 +215,12 @@ function init(imageURL, heightmap, name, planetType, planetSize, atmosphere, moo
 
     runAnimation(seedDate);
 
-
 }
 
 function runAnimation(seedDate) {
     animate();
     function animate() {
-        //time =360;
+        //time =0;
         time = (Date.now() - seedDate.getTime()) / 5000
         satellites.forEach((obj) => {
             if (time) {
@@ -252,6 +241,7 @@ function runAnimation(seedDate) {
     }
 
 }
+
 
 function render(time) {
 
